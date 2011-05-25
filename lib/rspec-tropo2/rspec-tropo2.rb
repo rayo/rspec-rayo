@@ -1,5 +1,43 @@
 require 'rspec/expectations'
 
+TROPO2_CALL_ID_FORMAT = /\A[\w]{8}-[\w]{4}-[\w]{4}-[\w]{4}-[\w]{12}/
+
+# Provides a custom matcher for validating a hangup event
+RSpec::Matchers.define :be_a_valid_answer_event do
+  match_for_should do |answer_event|
+    ap answer_event
+    if answer_event == "execution expired"
+      @error = 'event was not delivered to queue before read timeout'
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
+    
+    if answer_event.class != Punchblock::Protocol::Ozone::Message::Info
+      @error = 'not an instance of Punchblock::Protocol::Ozone::Message::Info'
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
+    
+    if answer_event.call_id.match(TROPO2_CALL_ID_FORMAT).nil?
+      @error = 'call_id == ' + answer_event.call_id + " - expected a GUID"
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
+    
+    if answer_event.type != :answer
+      @error = "got #{answer_event.type.to_s} - expected :answer"
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
+    
+    true if !@error
+  end
+  
+  failure_message_for_should do |actual|
+    "The hangup event was not valid: #{@error}"
+  end
+
+  description do
+    "Validate a hangup event"
+  end
+end
+
 RSpec::Matchers.define :be_a_valid_ask_event do
   match_for_should do |ask_event|
     ap ask_event
@@ -24,32 +62,6 @@ RSpec::Matchers.define :be_a_valid_ask_event do
   end
 end
 
-# Provides a custom matcher for validating a hangup event
-RSpec::Matchers.define :be_a_valid_answer_event do
-  match_for_should do |answer_event|
-    ap answer_event
-    if answer_event == "execution expired"
-      @error = 'event was not delivered to queue before read timeout'
-      raise RSpec::Expectations::ExpectationNotMetError
-    end
-    
-    if answer_event.class != Punchblock::Protocol::Ozone::Message::Info
-      @error = 'not an instance of Punchblock::Protocol::Ozone::Message::Info'
-      raise RSpec::Expectations::ExpectationNotMetError
-    end
-    
-    true if !@error
-  end
-  
-  failure_message_for_should do |actual|
-    "The hangup event was not valid: #{@error}"
-  end
-
-  description do
-    "Validate a hangup event"
-  end
-end
-
 # Provides a custom matcher for validating a call event
 RSpec::Matchers.define :be_a_valid_call_event do
   match_for_should do |call_event|
@@ -63,8 +75,8 @@ RSpec::Matchers.define :be_a_valid_call_event do
       raise RSpec::Expectations::ExpectationNotMetError
     end
     
-    if call_event.id.match(/\A[\w]{8}-[\w]{4}-[\w]{4}-[\w]{4}-[\w]{12}/).nil?
-      @error = 'id == ' + call_event.id + " - expected a GUID"
+    if call_event.id.match(TROPO2_CALL_ID_FORMAT).nil?
+      @error = 'call_id == ' + call_event.id + " - expected a GUID"
       raise RSpec::Expectations::ExpectationNotMetError
     end
     
