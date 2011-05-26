@@ -3,7 +3,7 @@ module Tropo2Utilities
     require 'net/http'
     require 'uri'
     
-    attr_accessor :script_content, :tropo_result, :drb
+    attr_accessor :script_content, :result, :drb
     
     def initialize(uri=nil)
       @uri            = uri || "druby://0.0.0.0:8787"
