@@ -14,7 +14,7 @@ module Tropo2Utilities
       read_event_queue
     end
     
-    def ask(prompt, choices, options ={})
+    def ask(prompt, options ={})
       @tropo2.write @call_event, @protocol::Message::Ask.new(prompt, options)
       read_event_queue unless get_method_name == 'ask_nonblocking'
     end
