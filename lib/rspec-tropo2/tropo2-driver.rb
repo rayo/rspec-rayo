@@ -15,7 +15,7 @@ module Tropo2Utilities
     end
     
     def ask(prompt, choices, options ={})
-      @tropo2.write @call_event, @protocol::Message::Ask.new(prompt, choices, options)
+      @tropo2.write @call_event, @protocol::Message::Ask.new(prompt, options)
       read_event_queue unless get_method_name == 'ask_nonblocking'
     end
     alias :ask_nonblocking :ask
