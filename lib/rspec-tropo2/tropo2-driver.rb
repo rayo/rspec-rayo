@@ -7,6 +7,11 @@ module Tropo2Utilities
       initialize_tropo2 options
     end
     
+    def accept
+      @tropo2.write @call_event, @protocol::Message::Accept.new
+      read_event_queue
+    end
+    
     def answer
       @tropo2.write @call_event, @protocol::Message::Answer.new
       read_event_queue
@@ -20,8 +25,24 @@ module Tropo2Utilities
     end
     alias :ask_nonblocking :ask
     
+    def conference(name, options={})
+      @tropo2.write @call_event, @protocol::Message::Conference.new(name, options)
+      read_event_queue unless get_method_name == 'conference_nonblocking'
+    end
+    alias :conference_nonblocking :ask
+    
     def hangup
       @tropo2.write @call_event, @protocol::Message::Hangup.new
+      read_event_queue
+    end
+
+    def redirect(destination)
+      @tropo2.write @call_event, @protocol::Message::Redirect.new(destination)
+      read_event_queue
+    end
+    
+    def reject
+      @tropo2.write @call_event, @protocol::Message::Reject.new
       read_event_queue
     end
     
