@@ -46,8 +46,8 @@ RSpec::Matchers.define :be_a_valid_ask_event do
   match_for_should do |ask_event|
     execution_expired?(ask_event)
     
-    if ask_event.class != Punchblock::Protocol::Ozone::Message::Complete
-      @error = 'not an instance of Punchblock::Protocol::Ozone::Message::Complete'
+    if ask_event.class != Punchblock::Protocol::Ozone::Complete
+      @error = 'not an instance of Punchblock::Protocol::Ozone::Complete'
       raise RSpec::Expectations::ExpectationNotMetError
     end
     
@@ -128,8 +128,8 @@ RSpec::Matchers.define :be_a_valid_hangup_event do
   match_for_should do |hangup_event|
     execution_expired?(hangup_event)
     
-    if hangup_event.class != Punchblock::Protocol::Ozone::Message::End
-      @error = 'not an instance of Punchblock::Protocol::Ozone::Message::End'
+    if hangup_event.class != Punchblock::Protocol::Ozone::End
+      @error = 'not an instance of Punchblock::Protocol::Ozone::End'
       raise RSpec::Expectations::ExpectationNotMetError
     end
     
@@ -156,8 +156,8 @@ RSpec::Matchers.define :be_a_valid_successful_say_event do
   match_for_should do |say_event|
     execution_expired?(say_event)
     
-    if say_event.class != Punchblock::Protocol::Ozone::Message::Complete
-      @error = 'not an instance of Punchblock::Protocol::Ozone::Message::Complete'
+    if say_event.class != Punchblock::Protocol::Ozone::Complete
+      @error = 'not an instance of Punchblock::Protocol::Ozone::Complete'
       raise RSpec::Expectations::ExpectationNotMetError
     end
     

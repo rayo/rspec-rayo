@@ -8,52 +8,55 @@ module Tropo2Utilities
     end
     
     def accept
-      @tropo2.write @call_event, @protocol::Message::Accept.new
+      @tropo2.write @call_event, @protocol::Accept.new
       read_event_queue
     end
     
     def answer
-      @tropo2.write @call_event, @protocol::Message::Answer.new
-      read_event_queue
-      # Reading a second time based on this bug: https://evolution.voxeo.com/ticket/1441822
+      @tropo2.write @call_event, @protocol::Answer.new
       read_event_queue
     end
     
     def ask(prompt, options ={})
-      @tropo2.write @call_event, @protocol::Message::Ask.new(prompt, options)
+      @tropo2.write @call_event, @protocol::Ask.new(prompt, options)
       read_event_queue unless get_method_name == 'ask_nonblocking'
     end
     alias :ask_nonblocking :ask
     
     def conference(name, options={})
-      @tropo2.write @call_event, @protocol::Message::Conference.new(name, options)
+      @tropo2.write @call_event, @protocol::Conference.new(name, options)
       read_event_queue unless get_method_name == 'conference_nonblocking'
     end
     alias :conference_nonblocking :ask
     
+    def dial(options)
+      @tropo2.write @call_event, @protocol::Dial.new(options)
+      read_event_queue
+    end
+    
     def hangup
-      @tropo2.write @call_event, @protocol::Message::Hangup.new
+      @tropo2.write @call_event, @protocol::Hangup.new
       read_event_queue
     end
 
     def redirect(destination)
-      @tropo2.write @call_event, @protocol::Message::Redirect.new(destination)
+      @tropo2.write @call_event, @protocol::Redirect.new(destination)
       read_event_queue
     end
     
     def reject
-      @tropo2.write @call_event, @protocol::Message::Reject.new
+      @tropo2.write @call_event, @protocol::Reject.new
       read_event_queue
     end
     
     def say(string, type = :text)
-      @tropo2.write @call_event, @protocol::Message::Say.new(type => string)
+      @tropo2.write @call_event, @protocol::Say.new(type => string)
       read_event_queue unless get_method_name == 'say_nonblocking'
     end
     alias :say_nonblocking :say
     
     def transfer(to, options={})
-      @tropo2.write @call_event, @protocol::Message::Transfer.new(to, options)
+      @tropo2.write @call_event, @protocol::Transfer.new(to, options)
       read_event_queue
     end
     

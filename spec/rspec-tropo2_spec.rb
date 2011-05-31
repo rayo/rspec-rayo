@@ -2,8 +2,8 @@ require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
 describe "RspecTropo2" do
   it "should validate an answer event" do
-    answer_event = mock(Punchblock::Protocol::Ozone::Message::Info)
-    answer_event.stub!(:class).and_return(Punchblock::Protocol::Ozone::Message::Info)
+    answer_event = mock(Punchblock::Protocol::Ozone::Info)
+    answer_event.stub!(:class).and_return(Punchblock::Protocol::Ozone::Info)
     answer_event.stub!(:type).and_return(:answer)
     answer_event.stub!(:call_id).and_return("3b7720bf-d5dc-4f4f-a837-d7338ec18b3a@10.0.1.11")
     
@@ -29,8 +29,8 @@ describe "RspecTropo2" do
   end
   
   it "should validate a hangup event" do
-    hangup_event = mock(Punchblock::Protocol::Ozone::Message::End)
-    hangup_event.stub!(:class).and_return(Punchblock::Protocol::Ozone::Message::End)
+    hangup_event = mock(Punchblock::Protocol::Ozone::End)
+    hangup_event.stub!(:class).and_return(Punchblock::Protocol::Ozone::End)
     hangup_event.stub!(:type).and_return(:hangup)
     hangup_event.stub!(:call_id).and_return("3b7720bf-d5dc-4f4f-a837-d7338ec18b3a@10.0.1.11")
     
@@ -38,8 +38,8 @@ describe "RspecTropo2" do
   end
   
   it "should validate a successful say event" do
-    say_event = mock(Punchblock::Protocol::Ozone::Message::Complete)
-    say_event.stub!(:class).and_return(Punchblock::Protocol::Ozone::Message::Complete)
+    say_event = mock(Punchblock::Protocol::Ozone::Complete)
+    say_event.stub!(:class).and_return(Punchblock::Protocol::Ozone::Complete)
     say_event.stub!(:call_id).and_return('5d6fe904-103d-4551-bd47-cf212c37b8c7')
     say_event.stub!(:cmd_id).and_return('6d5bf745-8fa9-4e78-be18-6e6a48393f13')
     say_event.stub!(:attributes).and_return({ :reason => 'SUCCESS' })
@@ -49,8 +49,8 @@ describe "RspecTropo2" do
   end
   
   it "should validate an ask event" do
-    ask_event = mock(Punchblock::Protocol::Ozone::Message::Complete)
-    ask_event.stub!(:class).and_return(Punchblock::Protocol::Ozone::Message::Complete)
+    ask_event = mock(Punchblock::Protocol::Ozone::Complete)
+    ask_event.stub!(:class).and_return(Punchblock::Protocol::Ozone::Complete)
     ask_event.stub!(:call_id).and_return('5d6fe904-103d-4551-bd47-cf212c37b8c7')
     ask_event.stub!(:cmd_id).and_return('6d5bf745-8fa9-4e78-be18-6e6a48393f13')
     ask_event.stub!(:xmlns).and_return('urn:xmpp:ozone:ask:1')
