@@ -21,12 +21,13 @@ include Tropo2Helpers
 # Provides a custom matcher for validating a hangup event
 RSpec::Matchers.define :be_a_valid_answer_event do
   match_for_should do |answer_event|
+    ap answer_event
     execution_expired?(answer_event)
     
     uuid_match?(answer_event.call_id, 'call_id')
     
     if answer_event.type != :answer
-      @error = "got #{answer_event.type.to_s} - expected :answer"
+      @error = "got :#{answer_event.type.to_s} - expected :answer"
       raise RSpec::Expectations::ExpectationNotMetError
     end
     
@@ -34,11 +35,11 @@ RSpec::Matchers.define :be_a_valid_answer_event do
   end
   
   failure_message_for_should do |actual|
-    "The hangup event was not valid: #{@error}"
+    "The answer event was not valid: #{@error}"
   end
 
   description do
-    "Validate a hangup event"
+    "Validate a answer event"
   end
 end
 
@@ -136,7 +137,7 @@ RSpec::Matchers.define :be_a_valid_hangup_event do
     uuid_match?(hangup_event.call_id, 'call_id')
     
     if hangup_event.type != :hangup
-      @error = "got #{hangup_event.type.to_s} - expected :hangup"
+      @error = "got :#{hangup_event.type.to_s} - expected :hangup"
       raise RSpec::Expectations::ExpectationNotMetError
     end
     
