@@ -175,7 +175,6 @@ RSpec::Matchers.define :be_a_valid_reject_event do
   end
 end
 
-
 RSpec::Matchers.define :be_a_valid_successful_say_event do
   match_for_should do |say_event|
     execution_expired?(say_event)

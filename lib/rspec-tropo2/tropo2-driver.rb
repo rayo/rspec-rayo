@@ -35,8 +35,8 @@ module Tropo2Utilities
       @tropo2.write @call_event, @protocol::Redirect.new(destination)
     end
     
-    def reject
-      @tropo2.write @call_event, @protocol::Reject.new
+    def reject(reason=nil)
+      @tropo2.write @call_event, @protocol::Reject.new(reason)
     end
     
     def say(string, type = :text)
