@@ -20,13 +20,18 @@ include Tropo2Helpers
 
 # Provides a custom matcher for validating a hangup event
 RSpec::Matchers.define :be_a_valid_answer_event do
-  match_for_should do |answer_event|
-    execution_expired?(answer_event)
+  match_for_should do |event|
+    execution_expired?(event)
     
-    uuid_match?(answer_event.call_id, 'call_id')
+    if event.class != Punchblock::Protocol::Ozone::Info
+      @error = 'not an instance of Punchblock::Protocol::Ozone::Info'
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
     
-    if answer_event.type != :answer
-      @error = "got :#{answer_event.type.to_s} - expected :answer"
+    uuid_match?(event.call_id, 'call_id')
+    
+    if event.type != :answer
+      @error = "got :#{event.type.to_s} - expected :answer"
       raise RSpec::Expectations::ExpectationNotMetError
     end
     
