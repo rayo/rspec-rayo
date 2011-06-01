@@ -209,6 +209,40 @@ RSpec::Matchers.define :be_a_valid_reject_event do
   end
 end
 
+RSpec::Matchers.define :be_a_valid_ring_event do
+  match_for_should do |event|
+    execution_expired?(event)
+    
+    if event.class != Punchblock::Protocol::Ozone::Info
+      @error = 'not an instance of Punchblock::Protocol::Ozone::Info'
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
+    
+    uuid_match?(event.call_id, 'call_id')
+    uuid_match?(event.cmd_id, 'cmd_id')
+    
+    if event.xmlns != 'urn:xmpp:ozone:info:1'
+      @error = "expected urn:xmpp:ozone:info:1 for xmlns - got #{event.xmlns}"
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
+    
+    if event.type != :ring
+      @error = "eexpected :ring for type - got :#{event.type.to_s}"
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
+    
+    true if !@error
+  end
+  
+  failure_message_for_should do |actual|
+    "The ring event was not valid: #{@error}"
+  end
+
+  description do
+    "Validate a ring event"
+  end
+end
+
 RSpec::Matchers.define :be_a_valid_successful_say_event do
   match_for_should do |say_event|
     execution_expired?(say_event)
@@ -278,19 +312,19 @@ RSpec::Matchers.define :be_a_valid_stopped_say_event do
 end
 
 RSpec::Matchers.define :be_a_valid_transfer_event do
-  match_for_should do |transfer_event|
-    execution_expired?(transfer_event)
+  match_for_should do |event|
+    execution_expired?(event)
     
-    if transfer_event.class != Punchblock::Protocol::Ozone::Complete
+    if event.class != Punchblock::Protocol::Ozone::Complete
       @error = 'not an instance of Punchblock::Protocol::Ozone::Complete'
       raise RSpec::Expectations::ExpectationNotMetError
     end
     
-    uuid_match?(transfer_event.call_id, 'call_id')
-    uuid_match?(transfer_event.cmd_id, 'cmd_id')
+    uuid_match?(event.call_id, 'call_id')
+    uuid_match?(event.cmd_id, 'cmd_id')
     
-    if transfer_event.xmlns != 'urn:xmpp:ozone:transfer:1'
-      @error = "expected urn:xmpp:ozone:transfer:1 for xmlns - got #{transfer_event.xmlns}"
+    if event.xmlns != 'urn:xmpp:ozone:transfer:1'
+      @error = "expected urn:xmpp:ozone:transfer:1 for xmlns - got #{event.xmlns}"
       raise RSpec::Expectations::ExpectationNotMetError
     end
     

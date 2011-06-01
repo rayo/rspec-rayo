@@ -57,6 +57,27 @@ describe "RspecTropo2" do
     
     ask_event.should be_a_valid_ask_event
   end
+
+  it "should validate a transfer event" do
+    transfer_event = mock(Punchblock::Protocol::Ozone::Complete)
+    transfer_event.stub!(:class).and_return(Punchblock::Protocol::Ozone::Complete)
+    transfer_event.stub!(:call_id).and_return('5d6fe904-103d-4551-bd47-cf212c37b8c7')
+    transfer_event.stub!(:cmd_id).and_return('6d5bf745-8fa9-4e78-be18-6e6a48393f13')
+    transfer_event.stub!(:xmlns).and_return('urn:xmpp:ozone:transfer:1')
+
+    transfer_event.should be_a_valid_transfer_event
+  end
+  
+  it "should validate a ring event" do
+    ring_event = mock(Punchblock::Protocol::Ozone::Info)
+    ring_event.stub!(:class).and_return(Punchblock::Protocol::Ozone::Info)
+    ring_event.stub!(:call_id).and_return('5d6fe904-103d-4551-bd47-cf212c37b8c7')
+    ring_event.stub!(:cmd_id).and_return('6d5bf745-8fa9-4e78-be18-6e6a48393f13')
+    ring_event.stub!(:xmlns).and_return('urn:xmpp:ozone:info:1')
+    ring_event.stub!(:type).and_return(:ring)
+
+    ring_event.should be_a_valid_ring_event
+  end
 end
 
 
