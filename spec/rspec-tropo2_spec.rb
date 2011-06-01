@@ -58,6 +58,28 @@ describe "RspecTropo2" do
     ask_event.should be_a_valid_ask_event
   end
 
+  it "should validate a NOINPUT event" do
+    noinput_event = mock(Punchblock::Protocol::Ozone::Complete)
+    noinput_event.stub!(:class).and_return(Punchblock::Protocol::Ozone::Complete)
+    noinput_event.stub!(:call_id).and_return('5d6fe904-103d-4551-bd47-cf212c37b8c7')
+    noinput_event.stub!(:cmd_id).and_return('6d5bf745-8fa9-4e78-be18-6e6a48393f13')
+    noinput_event.stub!(:xmlns).and_return('urn:xmpp:ozone:ask:1')
+    noinput_event.stub!(:attributes).and_return({ :reason => 'NOINPUT' })
+    
+    noinput_event.should be_a_valid_noinput_event
+  end
+  
+  it "should validate a NOMATCH event" do
+    nomatch_event = mock(Punchblock::Protocol::Ozone::Complete)
+    nomatch_event.stub!(:class).and_return(Punchblock::Protocol::Ozone::Complete)
+    nomatch_event.stub!(:call_id).and_return('5d6fe904-103d-4551-bd47-cf212c37b8c7')
+    nomatch_event.stub!(:cmd_id).and_return('6d5bf745-8fa9-4e78-be18-6e6a48393f13')
+    nomatch_event.stub!(:xmlns).and_return('urn:xmpp:ozone:ask:1')
+    nomatch_event.stub!(:attributes).and_return({ :reason => 'NOMATCH' })
+    
+    nomatch_event.should be_a_valid_nomatch_event
+  end
+  
   it "should validate a transfer event" do
     transfer_event = mock(Punchblock::Protocol::Ozone::Complete)
     transfer_event.stub!(:class).and_return(Punchblock::Protocol::Ozone::Complete)
