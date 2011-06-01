@@ -329,7 +329,7 @@ RSpec::Matchers.define :be_a_valid_stopped_ask_event do
     uuid_match?(event.cmd_id, 'cmd_id')
     
     if event.attributes[:reason] != 'STOP'
-      @error = "expected :success for attributes[:reason] - got #{event.attributes[:reason]}"
+      @error = "expected STOP for attributes[:reason] - got #{event.attributes[:reason]}"
       raise RSpec::Expectations::ExpectationNotMetError
     end
     
@@ -432,6 +432,40 @@ RSpec::Matchers.define :be_a_valid_transfer_event do
     
     if event.xmlns != 'urn:xmpp:ozone:transfer:1'
       @error = "expected urn:xmpp:ozone:transfer:1 for xmlns - got #{event.xmlns}"
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
+    
+    true if !@error
+  end
+  
+  failure_message_for_should do |actual|
+    "The transfer event was not valid: #{@error}"
+  end
+
+  description do
+    "Validate a transfer event"
+  end
+end
+
+RSpec::Matchers.define :be_a_valid_transfer_timeout_event do
+  match_for_should do |event|
+    execution_expired?(event)
+    
+    if event.class != Punchblock::Protocol::Ozone::Complete
+      @error = 'not an instance of Punchblock::Protocol::Ozone::Complete'
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
+    
+    uuid_match?(event.call_id, 'call_id')
+    uuid_match?(event.cmd_id, 'cmd_id')
+    
+    if event.xmlns != 'urn:xmpp:ozone:transfer:1'
+      @error = "expected urn:xmpp:ozone:transfer:1 for xmlns - got #{event.xmlns}"
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
+    
+    if event.attributes[:reason] != 'TIMEOUT'
+      @error = "expected TIMEOUT for attributes[:reason] - got #{event.attributes[:reason]}"
       raise RSpec::Expectations::ExpectationNotMetError
     end
     
