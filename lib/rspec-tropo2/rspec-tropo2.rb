@@ -276,3 +276,32 @@ RSpec::Matchers.define :be_a_valid_stopped_say_event do
     "Validate an say event"
   end
 end
+
+RSpec::Matchers.define :be_a_valid_transfer_event do
+  match_for_should do |transfer_event|
+    execution_expired?(transfer_event)
+    
+    if transfer_event.class != Punchblock::Protocol::Ozone::Complete
+      @error = 'not an instance of Punchblock::Protocol::Ozone::Complete'
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
+    
+    uuid_match?(transfer_event.call_id, 'call_id')
+    uuid_match?(transfer_event.cmd_id, 'cmd_id')
+    
+    if transfer_event.xmlns != 'urn:xmpp:ozone:transfer:1'
+      @error = "expected urn:xmpp:ozone:transfer:1 for xmlns - got #{transfer_event.xmlns}"
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
+    
+    true if !@error
+  end
+  
+  failure_message_for_should do |actual|
+    "The transfer event was not valid: #{@error}"
+  end
+
+  description do
+    "Validate a transfer event"
+  end
+end
