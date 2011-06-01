@@ -316,6 +316,74 @@ RSpec::Matchers.define :be_a_valid_successful_say_event do
   end
 end
 
+RSpec::Matchers.define :be_a_valid_stopped_ask_event do
+  match_for_should do |event|
+    execution_expired?(event)
+    
+    if event.class != Punchblock::Protocol::Ozone::Complete
+      @error = 'not an instance of Punchblock::Protocol::Ozone::Complete'
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
+    
+    uuid_match?(event.call_id, 'call_id')
+    uuid_match?(event.cmd_id, 'cmd_id')
+    
+    if event.attributes[:reason] != 'STOP'
+      @error = "expected :success for attributes[:reason] - got #{event.attributes[:reason]}"
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
+    
+    if event.xmlns != 'urn:xmpp:ozone:ask:1'
+      @error = "expected urn:xmpp:ozone:ask:1 for xmlns - got #{event.xmlns}"
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
+    
+    true if !@error
+  end
+  
+  failure_message_for_should do |actual|
+    "The ask event was not valid: #{@error}"
+  end
+
+  description do
+    "Validate an say event"
+  end
+end
+
+RSpec::Matchers.define :be_a_valid_successful_say_event do
+  match_for_should do |say_event|
+    execution_expired?(say_event)
+    
+    if say_event.class != Punchblock::Protocol::Ozone::Complete
+      @error = 'not an instance of Punchblock::Protocol::Ozone::Complete'
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
+    
+    uuid_match?(say_event.call_id, 'call_id')
+    uuid_match?(say_event.cmd_id, 'cmd_id')
+    
+    if say_event.attributes[:reason] != 'SUCCESS'
+      @error = "expected :success for attributes[:reason] - got #{say_event.attributes[:reason]}"
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
+    
+    if say_event.xmlns != 'urn:xmpp:ozone:say:1'
+      @error = "expected urn:xmpp:ozone:say:1 for xmlns - got #{say_event.xmlns}"
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
+    
+    true if !@error
+  end
+  
+  failure_message_for_should do |actual|
+    "The say event was not valid: #{@error}"
+  end
+
+  description do
+    "Validate an ask event"
+  end
+end
+
 RSpec::Matchers.define :be_a_valid_stopped_say_event do
   match_for_should do |say_event|
     execution_expired?(say_event)
