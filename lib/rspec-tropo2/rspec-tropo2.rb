@@ -219,7 +219,6 @@ RSpec::Matchers.define :be_a_valid_ring_event do
     end
     
     uuid_match?(event.call_id, 'call_id')
-    uuid_match?(event.cmd_id, 'cmd_id')
     
     if event.xmlns != 'urn:xmpp:ozone:info:1'
       @error = "expected urn:xmpp:ozone:info:1 for xmlns - got #{event.xmlns}"
