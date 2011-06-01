@@ -210,19 +210,35 @@ RSpec::Matchers.define :be_a_valid_successful_say_event do
 end
 
 RSpec::Matchers.define :be_a_valid_stopped_say_event do
-  match_for_should do |sau_event|
+  match_for_should do |say_event|
     execution_expired?(say_event)
     
-    # reply[:stanza]['iq']['type'].should eql 'result'
-    # say[:stanza]['iq']['type'].should eql 'set'
-    # say[:stanza]['iq']['complete']['reason'].should eql 'STOP'
+    if say_event.class != Punchblock::Protocol::Ozone::Complete
+      @error = 'not an instance of Punchblock::Protocol::Ozone::Complete'
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
+    
+    uuid_match?(say_event.call_id, 'call_id')
+    uuid_match?(say_event.cmd_id, 'cmd_id')
+    
+    if say_event.attributes[:reason] != 'STOP'
+      @error = "expected :success for attributes[:reason] - got #{say_event.attributes[:reason]}"
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
+    
+    if say_event.xmlns != 'urn:xmpp:ozone:say:1'
+      @error = "expected urn:xmpp:ozone:say:1 for xmlns - got #{say_event.xmlns}"
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
+    
+    true if !@error
   end
   
   failure_message_for_should do |actual|
-    "The ask event was not valid: #{@error}"
+    "The say event was not valid: #{@error}"
   end
 
   description do
-    "Validate an ask event"
+    "Validate an say event"
   end
 end
