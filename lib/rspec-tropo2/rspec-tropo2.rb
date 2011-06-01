@@ -71,6 +71,40 @@ RSpec::Matchers.define :be_a_valid_ask_event do
   end
 end
 
+RSpec::Matchers.define :be_a_valid_stopped_ask_event do
+  match_for_should do |ask_event|
+    execution_expired?(ask_event)
+    
+    if ask_event.class != Punchblock::Protocol::Ozone::Complete
+      @error = 'not an instance of Punchblock::Protocol::Ozone::Complete'
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
+    
+    uuid_match?(ask_event.call_id, 'call_id')
+    uuid_match?(ask_event.cmd_id, 'cmd_id')
+    
+    if ask_event.xmlns != 'urn:xmpp:ozone:ask:1'
+      @error = "expected urn:xmpp:ozone:ask:1 for xmlns - got #{ask_event.xmlns}"
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
+    
+    if ask_event.attributes[:reason] != 'STOP'
+      @error = "expected :success for attributes[:reason] - got #{ask_event.attributes[:reason]}"
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
+    
+    true if !@error
+  end
+  
+  failure_message_for_should do |actual|
+    "The ask event was not valid: #{@error}"
+  end
+
+  description do
+    "Validate an ask event"
+  end
+end
+
 # Provides a custom matcher for validating a call event
 RSpec::Matchers.define :be_a_valid_call_event do
   match_for_should do |call_event|

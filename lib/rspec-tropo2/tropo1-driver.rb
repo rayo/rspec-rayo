@@ -13,7 +13,7 @@ module Tropo2Utilities
     end
     
     def place_call(session_url)      
-      Net::HTTP.get_print URI.parse session_url
+      Net::HTTP.get URI.parse session_url
     end
   end
 end
