@@ -76,6 +76,35 @@ RSpec::Matchers.define :be_a_valid_ask_event do
   end
 end
 
+RSpec::Matchers.define :be_a_valid_conference_event do
+  match_for_should do |event|
+    execution_expired?(event)
+    
+    if event.class != Punchblock::Protocol::Ozone::Complete
+      @error = 'not an instance of Punchblock::Protocol::Ozone::Complete'
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
+    
+    uuid_match?(event.call_id, 'call_id')
+    uuid_match?(event.cmd_id, 'cmd_id')
+    
+    if event.xmlns != 'urn:xmpp:ozone:conference:1'
+      @error = "expected urn:xmpp:ozone:conference:1 for xmlns - got #{event.xmlns}"
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
+    
+    true if !@error
+  end
+  
+  failure_message_for_should do |actual|
+    "The ask event was not valid: #{@error}"
+  end
+
+  description do
+    "Validate an ask event"
+  end
+end
+
 RSpec::Matchers.define :be_a_valid_noinput_event do
   match_for_should do |event|
     execution_expired?(event)
