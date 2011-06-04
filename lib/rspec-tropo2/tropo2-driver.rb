@@ -42,8 +42,12 @@ module Tropo2Utilities
             @calls.merge!({ event.call_id => call })
             @call_queue.push call
           else
-            # Temp based on this: https://github.com/tropo/punchblock/issues/27
-            @calls[event.call_id].queue.push event unless event.nil?
+            # Temp based on this nil returned on conference: https://github.com/tropo/punchblock/issues/27
+            begin
+              @calls[event.call_id].queue.push event unless event.nil?
+            rescue => error
+              # Event nil issue to be addressed here: https://github.com/tropo/rspec-tropo2/issues/2
+            end
           end
         end
         
