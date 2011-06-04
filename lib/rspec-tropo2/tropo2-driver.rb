@@ -1,79 +1,50 @@
 module Tropo2Utilities
   class Tropo2Driver
-    attr_reader :event_queue, :threads
+    attr_reader :event_queue, :threads, :call_queue
+    attr_accessor :calls
     
     def initialize(options)
-      @queue_timeout = options[:timeout] || 5
+      @calls         = {}
+      @call_queue    = Queue.new
+      @queue_timeout = options[:queue_timeout] || 5
+      
       initialize_tropo2 options
     end
     
-    def accept
-      @tropo2.write @call_event, @protocol::Accept.new
+    def start_event_dispatcher
+      @threads << Thread.new do
+        event = nil
+        
+        until event == 'STOP' do
+          event = @event_queue.pop
+          case event.class.to_s
+          when 'Punchblock::Call'
+            queue = Queue.new
+            call = Call.new({ :call_event => event,
+                              :punchblock => @tropo2,
+                              :protocol   => @protocol,
+                              :queue      => queue,
+                              :timeout    => @queue_timeout  })
+            @calls.merge!({ event.call_id => call })
+            @call_queue.push call
+          else
+            @calls[event.call_id].queue.push event
+          end
+        end
+        
+      end
     end
     
-    def answer
-      @tropo2.write @call_event, @protocol::Answer.new
-    end
-    
-    def ask(prompt, options ={})
-      @tropo2.write @call_event, @protocol::Ask.new(prompt, options)
-    end
-    
-    def conference(name, options={})
-      @tropo2.write @call_event, @protocol::Conference.new(name, options)
-    end
-    
-    def dial(options)
-      @tropo2.write @call_event, @protocol::Dial.new(options)
-    end
-    
-    def hangup
-      @tropo2.write @call_event, @protocol::Hangup.new
-    end
-
-    def redirect(destination)
-      @tropo2.write @call_event, @protocol::Redirect.new(destination)
-    end
-    
-    def reject(reason=nil)
-      @tropo2.write @call_event, @protocol::Reject.new(reason)
-    end
-    
-    def say(string, type = :text)
-      @tropo2.write @call_event, @protocol::Say.new(type => string)
-    end
-    
-    def transfer(to, options={})
-      @tropo2.write @call_event, @protocol::Transfer.new(to, options)
-    end
-    
-    def last_event?(timeout=nil)
-      timeout = timeout || 2
-      true if read_event_queue(timeout) == "execution expired"
-    end
-    
-    ##
-    # Wrap queue reads in a timeout
-    def read_event_queue(timeout=nil)
-      timeout = @queue_timeout if timeout.nil?
-
+    def read_event_queue
       queue_item = nil
       begin
-        Timeout::timeout(timeout) {
-          queue_item = @tropo2.event_queue.pop
+        Timeout::timeout(@queue_timeout) {
+          queue_item = @event_queue.pop
         }
       rescue Timeout::Error => e
         queue_item = e.to_s
       end
-      @call_event = queue_item if queue_item.class == Punchblock::Call
       queue_item
-    end
-    
-    private
-    
-    def get_method_name
-      caller[0]=~/`(.*?)'/
-      $1
     end
     
     def initialize_tropo2(options)
