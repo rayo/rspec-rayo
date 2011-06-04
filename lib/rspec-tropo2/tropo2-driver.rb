@@ -15,6 +15,16 @@ module Tropo2Utilities
       @call_queue.pop
     end
     
+    def create_call
+      queue = Queue.new
+      call = Call.new({ :punchblock => @tropo2,
+                        :protocol   => @protocol,
+                        :queue      => queue,
+                        :timeout    => @queue_timeout  })
+      @calls.merge!({ event.call_id => call })
+      call
+    end
+    
     def start_event_dispatcher
       @threads << Thread.new do
         event = nil
