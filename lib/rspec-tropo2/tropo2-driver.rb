@@ -1,6 +1,6 @@
 module Tropo2Utilities
   class Tropo2Driver
-    attr_reader :event_queue, :threads, :call_queue
+    attr_reader :event_queue, :threads
     attr_accessor :calls
     
     def initialize(options)
@@ -9,6 +9,10 @@ module Tropo2Utilities
       @queue_timeout = options[:queue_timeout] || 5
       
       initialize_tropo2 options
+    end
+    
+    def get_call
+      @call_queue.pop
     end
     
     def start_event_dispatcher

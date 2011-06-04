@@ -52,10 +52,10 @@ module Tropo2Utilities
     
     def last_event?(timeout=nil)  
       timeout = timeout || 2
-      true if read_queue(timeout) == "execution expired"
+      true if next_event(timeout) == "execution expired"
     end
     
-    def read_queue(timeout=nil)
+    def next_event(timeout=nil)
       timeout = timeout || @timeout
       queue_item = nil
       begin
