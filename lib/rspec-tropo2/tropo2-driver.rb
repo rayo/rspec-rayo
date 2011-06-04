@@ -32,7 +32,8 @@ module Tropo2Utilities
             @calls.merge!({ event.call_id => call })
             @call_queue.push call
           else
-            @calls[event.call_id].queue.push event
+            # Temp based on this: https://github.com/tropo/punchblock/issues/27
+            @calls[event.call_id].queue.push event unless event.nil?
           end
         end
         
