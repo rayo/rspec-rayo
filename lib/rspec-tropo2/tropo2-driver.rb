@@ -4,9 +4,10 @@ module Tropo2Utilities
     attr_accessor :calls
     
     def initialize(options)
-      @calls         = {}
-      @call_queue    = Queue.new
-      @queue_timeout = options[:queue_timeout] || 5
+      @calls          = {}
+      @call_queue     = Queue.new
+      @ring_event_queue = Queue.new
+      @queue_timeout  = options[:queue_timeout] || 5
       
       initialize_tropo2 options
     end
@@ -15,13 +16,15 @@ module Tropo2Utilities
       @call_queue.pop
     end
     
-    def create_call
-      queue = Queue.new
+    def dial(options)
       call = Call.new({ :punchblock => @tropo2,
                         :protocol   => @protocol,
-                        :queue      => queue,
+                        :queue      => Queue.new,
                         :timeout    => @queue_timeout  })
-      @calls.merge!({ event.call_id => call })
+      call.dial(options)
+      call.ring_event = @ring_event_queue.pop
+      call.call_event = Punchblock::Call.new(call.ring_event.call_id, nil, { 'x-tropo2-origin' => 'rspec-tropo2' })
+      @calls.merge!({ call.call_event.call_id => call })
       call
     end
     
@@ -41,6 +44,12 @@ module Tropo2Utilities
                               :timeout    => @queue_timeout  })
             @calls.merge!({ event.call_id => call })
             @call_queue.push call
+          when 'Punchblock::Protocol::Ozone::Info'
+            if event.type == :ring
+              @ring_event_queue.push event
+            else
+              @calls[event.call_id].queue.push event unless event.nil?
+            end
           else
             # Temp based on this nil returned on conference: https://github.com/tropo/punchblock/issues/27
             begin

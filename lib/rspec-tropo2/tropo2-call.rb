@@ -1,6 +1,7 @@
 module Tropo2Utilities
   class Call
-    attr_reader :call_event, :queue
+    attr_accessor :call_event, :ring_event
+    attr_reader :queue
     
     def initialize(options)
       @call_event = options[:call_event]
