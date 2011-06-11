@@ -19,12 +19,12 @@ module Tropo2Utilities
       @punchblock.write @call_event, @protocol::Answer.new
     end
     
-    def ask(prompt, options ={})
-      @punchblock.write @call_event, @protocol::Ask.new(prompt, options)
+    def ask(options)
+      @punchblock.write @call_event, @protocol::Ask.new(options)
     end
     
-    def conference(name, options={})
-      @punchblock.write @call_event, @protocol::Conference.new(name, options)
+    def conference(options)
+      @punchblock.write @call_event, @protocol::Conference.new(options)
     end
     
     def dial(options)
@@ -35,20 +35,20 @@ module Tropo2Utilities
       @punchblock.write @call_event, @protocol::Hangup.new
     end
 
-    def redirect(destination)
-      @punchblock.write @call_event, @protocol::Redirect.new(destination)
+    def redirect(options)
+      @punchblock.write @call_event, @protocol::Redirect.new(options)
     end
     
     def reject(reason=nil)
       @punchblock.write @call_event, @protocol::Reject.new(reason)
     end
     
-    def say(string, type = :text)
-      @punchblock.write @call_event, @protocol::Say.new(type => string)
+    def say(options)
+      @punchblock.write @call_event, @protocol::Say.new(options)
     end
     
-    def transfer(to, options={})
-      @punchblock.write @call_event, @protocol::Transfer.new(to, options)
+    def transfer(options)
+      @punchblock.write @call_event, @protocol::Transfer.new(options)
     end
     
     def last_event?(timeout=nil)  

@@ -30,8 +30,8 @@ RSpec::Matchers.define :be_a_valid_answer_event do
     
     uuid_match?(event.call_id, 'call_id')
     
-    if event.type != :answer
-      @error = "got :#{event.type.to_s} - expected :answer"
+    if event.reason != :answer
+      @error = "got :#{event.reason.to_s} - expected :answer"
       raise RSpec::Expectations::ExpectationNotMetError
     end
     
@@ -48,19 +48,24 @@ RSpec::Matchers.define :be_a_valid_answer_event do
 end
 
 RSpec::Matchers.define :be_a_valid_ask_event do
-  match_for_should do |ask_event|
-    execution_expired?(ask_event)
+  match_for_should do |event|
+    execution_expired?(event)
     
-    if ask_event.class != Punchblock::Protocol::Ozone::Complete
+    if event.class != Punchblock::Protocol::Ozone::Complete
       @error = 'not an instance of Punchblock::Protocol::Ozone::Complete'
       raise RSpec::Expectations::ExpectationNotMetError
     end
     
-    uuid_match?(ask_event.call_id, 'call_id')
-    uuid_match?(ask_event.cmd_id, 'cmd_id')
+    uuid_match?(event.call_id, 'call_id')
+    uuid_match?(event.command_id, 'cmd_id')
+
+    if event.namespace_href != 'urn:xmpp:ozone:ext:1'
+      @error = "expected urn:xmpp:ozone:ext:1 for namespace_href - got #{event.namespace_href}"
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
     
-    if ask_event.xmlns != 'urn:xmpp:ozone:ask:1'
-      @error = "expected urn:xmpp:ozone:ask:1 for xmlns - got #{ask_event.xmlns}"
+    if event.reason.namespace_href != 'urn:xmpp:ozone:ask:complete:1'
+      @error = "expected urn:xmpp:ozone:ext:1 for namespace_href - got #{event.reason.namespace_href}"
       raise RSpec::Expectations::ExpectationNotMetError
     end
     
@@ -86,10 +91,10 @@ RSpec::Matchers.define :be_a_valid_conference_event do
     end
     
     uuid_match?(event.call_id, 'call_id')
-    uuid_match?(event.cmd_id, 'cmd_id')
+    uuid_match?(event.command_id, 'cmd_id')
     
-    if event.xmlns != 'urn:xmpp:ozone:conference:1'
-      @error = "expected urn:xmpp:ozone:conference:1 for xmlns - got #{event.xmlns}"
+    if event.namespace_href != 'urn:xmpp:ozone:ext:1'
+      @error = "expected urn:xmpp:ozone:ext:1 for xmlns - got #{event.namespace_href}"
       raise RSpec::Expectations::ExpectationNotMetError
     end
     
@@ -115,15 +120,20 @@ RSpec::Matchers.define :be_a_valid_noinput_event do
     end
     
     uuid_match?(event.call_id, 'call_id')
-    uuid_match?(event.cmd_id, 'cmd_id')
+    uuid_match?(event.command_id, 'cmd_id')
     
-    if event.xmlns != 'urn:xmpp:ozone:ask:1'
-      @error = "expected urn:xmpp:ozone:ask:1 for xmlns - got #{event.xmlns}"
+    if event.namespace_href != 'urn:xmpp:ozone:ext:1'
+      @error = "expected urn:xmpp:ozone:ext:1 for xmlns - got #{event.namespace_href}"
       raise RSpec::Expectations::ExpectationNotMetError
     end
     
-    if event.attributes[:reason] != 'NOINPUT'
-      @error = "expected NOINPUT for attributes[:reason] - got #{event.attributes[:reason]}"
+    if event.reason.name != :noinput
+      @error = "expected :noinput for reason - got #{event.reason.name}"
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
+    
+    if event.reason.namespace_href != 'urn:xmpp:ozone:ask:complete:1'
+      @error = "expected urn:xmpp:ozone:ask:complete:1 for xmlns - got #{event.reason.namespace_href}"
       raise RSpec::Expectations::ExpectationNotMetError
     end
     
@@ -149,10 +159,49 @@ RSpec::Matchers.define :be_a_valid_nomatch_event do
     end
     
     uuid_match?(event.call_id, 'call_id')
-    uuid_match?(event.cmd_id, 'cmd_id')
+    uuid_match?(event.command_id, 'cmd_id')
     
-    if event.xmlns != 'urn:xmpp:ozone:ask:1'
-      @error = "expected urn:xmpp:ozone:ask:1 for xmlns - got #{event.xmlns}"
+    if event.namespace_href != 'urn:xmpp:ozone:ext:1'
+      @error = "expected urn:xmpp:ozone:ext:1 for xmlns - got #{event.namespace_href}"
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
+    
+    if event.reason.name != :noinput
+      @error = "expected :noinput for reason - got #{event.reason}"
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
+    
+    if event.reason.namespace_href != 'urn:xmpp:ozone:ask:complete:1'
+      @error = "expected urn:xmpp:ozone:ask:complete:1 for xmlns - got #{event.namespace_href}"
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
+    
+    true if !@error
+  end
+  
+  failure_message_for_should do |actual|
+    "The ask event was not valid: #{@error}"
+  end
+
+  description do
+    "Validate an ask event"
+  end
+end
+
+RSpec::Matchers.define :be_a_valid_nomatch_event do
+  match_for_should do |event|
+    execution_expired?(event)
+    
+    if event.class != Punchblock::Protocol::Ozone::Complete
+      @error = 'not an instance of Punchblock::Protocol::Ozone::Complete'
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
+    
+    uuid_match?(event.call_id, 'call_id')
+    uuid_match?(event.command_id, 'cmd_id')
+    
+    if event.namespace_href != 'urn:xmpp:ozone:ask:1'
+      @error = "expected urn:xmpp:ozone:ask:1 for xmlns - got #{event.namespace_href}"
       raise RSpec::Expectations::ExpectationNotMetError
     end
     
@@ -227,18 +276,57 @@ end
 
 # Provides a custom matcher for validating a hangup event
 RSpec::Matchers.define :be_a_valid_hangup_event do
-  match_for_should do |hangup_event|
-    execution_expired?(hangup_event)
+  match_for_should do |event|
+    execution_expired?(event)
     
-    if hangup_event.class != Punchblock::Protocol::Ozone::End
+    if event.class != Punchblock::Protocol::Ozone::End
       @error = 'not an instance of Punchblock::Protocol::Ozone::End'
       raise RSpec::Expectations::ExpectationNotMetError
     end
     
-    uuid_match?(hangup_event.call_id, 'call_id')
+    uuid_match?(event.call_id, 'call_id')
     
-    if hangup_event.type != :hangup
-      @error = "got :#{hangup_event.type.to_s} - expected :hangup"
+    if event.reason != :hangup
+      @error = "got :#{event.reason.to_s} - expected :hangup"
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
+    
+    if event.namespace_href != 'urn:xmpp:ozone:1'
+      @error = "got namespace_href #{event.namespace_href} - expected urn:xmpp:ozone:1"
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
+    
+    true if !@error
+  end
+  
+  failure_message_for_should do |actual|
+    "The hangup event was not valid: #{@error}"
+  end
+
+  description do
+    "Validate a hangup event"
+  end
+end
+
+# Provides a custom matcher for validating a hangup event
+RSpec::Matchers.define :be_a_valid_say_hangup_event do
+  match_for_should do |event|
+    execution_expired?(event)
+    
+    if event.class != Punchblock::Protocol::Ozone::Complete
+      @error = 'not an instance of Punchblock::Protocol::Ozone::Complete'
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
+    
+    uuid_match?(event.call_id, 'call_id')
+    
+    if event.reason.name != :hangup
+      @error = "got :#{event.reason.to_s} - expected :hangup"
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
+    
+    if event.reason.namespace_href != 'urn:xmpp:ozone:ext:complete:1'
+      @error = "got namespace_href #{event.namespace_href} - expected urn:xmpp:ozone:ext:complete:1"
       raise RSpec::Expectations::ExpectationNotMetError
     end
     
@@ -255,13 +343,13 @@ RSpec::Matchers.define :be_a_valid_hangup_event do
 end
 
 RSpec::Matchers.define :be_a_valid_reject_event do
-  match_for_should do |reject_event|
-    execution_expired?(reject_event)
+  match_for_should do |event|
+    execution_expired?(event)
     
-    uuid_match?(reject_event.call_id, 'call_id')
+    uuid_match?(event.call_id, 'call_id')
     
-    if reject_event.type != :reject
-      @error = "got :#{reject_event.type.to_s} - expected :reject"
+    if event.reason != :reject
+      @error = "got :#{event.reason.to_s} - expected :reject"
       raise RSpec::Expectations::ExpectationNotMetError
     end
     
@@ -289,13 +377,13 @@ RSpec::Matchers.define :be_a_valid_ring_event do
     uuid_match?(event.call_id, 'call_id')
     
     # Awaiting this fix to be a complete test: https://github.com/tropo/punchblock/issues/25
-    # if event.xmlns != 'urn:xmpp:ozone:info:1'
-    #   @error = "expected urn:xmpp:ozone:info:1 for xmlns - got #{event.xmlns}"
+    # if event.namespace_href != 'urn:xmpp:ozone:info:1'
+    #   @error = "expected urn:xmpp:ozone:info:1 for xmlns - got #{event.namespace_href}"
     #   raise RSpec::Expectations::ExpectationNotMetError
     # end
     
-    if event.type != :ring
-      @error = "eexpected :ring for type - got :#{event.type.to_s}"
+    if event.reason != :ring
+      @error = "expected :ring for type - got :#{event.reason.to_s}"
       raise RSpec::Expectations::ExpectationNotMetError
     end
     
@@ -311,40 +399,6 @@ RSpec::Matchers.define :be_a_valid_ring_event do
   end
 end
 
-RSpec::Matchers.define :be_a_valid_successful_say_event do
-  match_for_should do |say_event|
-    execution_expired?(say_event)
-    
-    if say_event.class != Punchblock::Protocol::Ozone::Complete
-      @error = 'not an instance of Punchblock::Protocol::Ozone::Complete'
-      raise RSpec::Expectations::ExpectationNotMetError
-    end
-    
-    uuid_match?(say_event.call_id, 'call_id')
-    uuid_match?(say_event.cmd_id, 'cmd_id')
-    
-    if say_event.attributes[:reason] != 'SUCCESS'
-      @error = "expected :success for attributes[:reason] - got #{say_event.attributes[:reason]}"
-      raise RSpec::Expectations::ExpectationNotMetError
-    end
-    
-    if say_event.xmlns != 'urn:xmpp:ozone:say:1'
-      @error = "expected urn:xmpp:ozone:say:1 for xmlns - got #{say_event.xmlns}"
-      raise RSpec::Expectations::ExpectationNotMetError
-    end
-    
-    true if !@error
-  end
-  
-  failure_message_for_should do |actual|
-    "The say event was not valid: #{@error}"
-  end
-
-  description do
-    "Validate an ask event"
-  end
-end
-
 RSpec::Matchers.define :be_a_valid_stopped_ask_event do
   match_for_should do |event|
     execution_expired?(event)
@@ -355,15 +409,15 @@ RSpec::Matchers.define :be_a_valid_stopped_ask_event do
     end
     
     uuid_match?(event.call_id, 'call_id')
-    uuid_match?(event.cmd_id, 'cmd_id')
+    uuid_match?(event.command_id, 'cmd_id')
     
     if event.attributes[:reason] != 'STOP'
       @error = "expected STOP for attributes[:reason] - got #{event.attributes[:reason]}"
       raise RSpec::Expectations::ExpectationNotMetError
     end
     
-    if event.xmlns != 'urn:xmpp:ozone:ask:1'
-      @error = "expected urn:xmpp:ozone:ask:1 for xmlns - got #{event.xmlns}"
+    if event.namespace_href != 'urn:xmpp:ozone:ask:1'
+      @error = "expected urn:xmpp:ozone:ask:1 for xmlns - got #{event.namespace_href}"
       raise RSpec::Expectations::ExpectationNotMetError
     end
     
@@ -379,25 +433,25 @@ RSpec::Matchers.define :be_a_valid_stopped_ask_event do
   end
 end
 
-RSpec::Matchers.define :be_a_valid_successful_say_event do
-  match_for_should do |say_event|
-    execution_expired?(say_event)
+RSpec::Matchers.define :be_a_valid_say_event do
+  match_for_should do |event|
+    execution_expired?(event)
     
-    if say_event.class != Punchblock::Protocol::Ozone::Complete
+    if event.class != Punchblock::Protocol::Ozone::Complete
       @error = 'not an instance of Punchblock::Protocol::Ozone::Complete'
       raise RSpec::Expectations::ExpectationNotMetError
     end
     
-    uuid_match?(say_event.call_id, 'call_id')
-    uuid_match?(say_event.cmd_id, 'cmd_id')
+    uuid_match?(event.call_id, 'call_id')
+    uuid_match?(event.command_id, 'command_id')
     
-    if say_event.attributes[:reason] != 'SUCCESS'
-      @error = "expected :success for attributes[:reason] - got #{say_event.attributes[:reason]}"
+    if event.reason.name != :success
+      @error = "expected :success for reason - got #{event.reason}"
       raise RSpec::Expectations::ExpectationNotMetError
     end
     
-    if say_event.xmlns != 'urn:xmpp:ozone:say:1'
-      @error = "expected urn:xmpp:ozone:say:1 for xmlns - got #{say_event.xmlns}"
+    if event.reason.namespace_href != 'urn:xmpp:ozone:say:complete:1'
+      @error = "expected urn:xmpp:ozone:say:complete:1 for nampespace_href - got #{event.reason.namespace_href}"
       raise RSpec::Expectations::ExpectationNotMetError
     end
     
@@ -414,24 +468,24 @@ RSpec::Matchers.define :be_a_valid_successful_say_event do
 end
 
 RSpec::Matchers.define :be_a_valid_stopped_say_event do
-  match_for_should do |say_event|
-    execution_expired?(say_event)
+  match_for_should do |event|
+    execution_expired?(event)
     
-    if say_event.class != Punchblock::Protocol::Ozone::Complete
+    if event.class != Punchblock::Protocol::Ozone::Complete
       @error = 'not an instance of Punchblock::Protocol::Ozone::Complete'
       raise RSpec::Expectations::ExpectationNotMetError
     end
     
-    uuid_match?(say_event.call_id, 'call_id')
-    uuid_match?(say_event.cmd_id, 'cmd_id')
+    uuid_match?(event.call_id, 'call_id')
+    uuid_match?(event.command_id, 'cmd_id')
     
-    if say_event.attributes[:reason] != 'STOP'
-      @error = "expected :success for attributes[:reason] - got #{say_event.attributes[:reason]}"
+    if event.reason.name != :stop
+      @error = "expected :stop for reason.name - got #{event.reason.name}"
       raise RSpec::Expectations::ExpectationNotMetError
     end
     
-    if say_event.xmlns != 'urn:xmpp:ozone:say:1'
-      @error = "expected urn:xmpp:ozone:say:1 for xmlns - got #{say_event.xmlns}"
+    if event.reason.namespace_href != 'urn:xmpp:ozone:say:1'
+      @error = "expected urn:xmpp:ozone:say:1 for xmlns - got #{event.reason.namespace_href}"
       raise RSpec::Expectations::ExpectationNotMetError
     end
     
@@ -449,6 +503,7 @@ end
 
 RSpec::Matchers.define :be_a_valid_transfer_event do
   match_for_should do |event|
+    ap event
     execution_expired?(event)
     
     if event.class != Punchblock::Protocol::Ozone::Complete
@@ -457,10 +512,20 @@ RSpec::Matchers.define :be_a_valid_transfer_event do
     end
     
     uuid_match?(event.call_id, 'call_id')
-    uuid_match?(event.cmd_id, 'cmd_id')
+    uuid_match?(event.command_id, 'cmd_id')
     
-    if event.xmlns != 'urn:xmpp:ozone:transfer:1'
-      @error = "expected urn:xmpp:ozone:transfer:1 for xmlns - got #{event.xmlns}"
+    if event.namespace_href != 'urn:xmpp:ozone:ext:1'
+      @error = "expected urn:xmpp:ozone:ext:1 for namespace_ref - got #{event.namespace_href}"
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
+    
+    if event.reason.name != :success
+      @error = "expected :success for reason.name - got #{event.reason.name}"
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
+    
+    if event.reason.namespace_href != 'urn:xmpp:ozone:transfer:complete:1'
+      @error = "expected urn:xmpp:ozone:transfer:complete:1 for reason.namespace_ref - got #{event.reason.namespace_href}"
       raise RSpec::Expectations::ExpectationNotMetError
     end
     
@@ -478,6 +543,7 @@ end
 
 RSpec::Matchers.define :be_a_valid_transfer_timeout_event do
   match_for_should do |event|
+    ap event
     execution_expired?(event)
     
     if event.class != Punchblock::Protocol::Ozone::Complete
@@ -486,15 +552,20 @@ RSpec::Matchers.define :be_a_valid_transfer_timeout_event do
     end
     
     uuid_match?(event.call_id, 'call_id')
-    uuid_match?(event.cmd_id, 'cmd_id')
+    uuid_match?(event.command_id, 'cmd_id')
     
-    if event.xmlns != 'urn:xmpp:ozone:transfer:1'
-      @error = "expected urn:xmpp:ozone:transfer:1 for xmlns - got #{event.xmlns}"
+    if event.namespace_href != 'urn:xmpp:ozone:ext:1'
+      @error = "expected urn:xmpp:ozone:ext:1 for xmlns - got #{event.namespace_href}"
       raise RSpec::Expectations::ExpectationNotMetError
     end
     
-    if event.attributes[:reason] != 'TIMEOUT'
-      @error = "expected TIMEOUT for attributes[:reason] - got #{event.attributes[:reason]}"
+    if event.reason.name != :timeout
+      @error = "expected :timouet for reason.name - got #{event.reason.name}"
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
+    
+    if event.reason.namespace_href != 'urn:xmpp:ozone:transfer:complete:1'
+      @error = "expected urn:xmpp:ozone:transfer:complete:1 for xmlns - got #{event.reason.namespace_href}"
       raise RSpec::Expectations::ExpectationNotMetError
     end
     

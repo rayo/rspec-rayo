@@ -13,7 +13,7 @@ module Tropo2Utilities
     end
     
     def get_call
-      @call_queue.pop
+      read_queue(@call_queue)
     end
     
     def dial(options)
@@ -22,7 +22,7 @@ module Tropo2Utilities
                         :queue      => Queue.new,
                         :timeout    => @queue_timeout  })
       call.dial(options)
-      call.ring_event = @ring_event_queue.pop
+      call.ring_event = read_queue(@ring_event_queue)
       call.call_event = Punchblock::Call.new(call.ring_event.call_id, nil, { 'x-tropo2-origin' => 'rspec-tropo2' })
       @calls.merge!({ call.call_event.call_id => call })
       call
@@ -33,7 +33,7 @@ module Tropo2Utilities
         event = nil
         
         until event == 'STOP' do
-          event = @event_queue.pop
+          event = read_queue(@event_queue)
           case event.class.to_s
           when 'Punchblock::Call'
             queue = Queue.new
@@ -62,12 +62,12 @@ module Tropo2Utilities
         
       end
     end
-    
-    def read_event_queue
+        
+    def read_queue(queue)
       queue_item = nil
       begin
         Timeout::timeout(@queue_timeout) {
-          queue_item = @event_queue.pop
+          queue_item = queue.pop
         }
       rescue Timeout::Error => e
         queue_item = e.to_s
@@ -80,11 +80,10 @@ module Tropo2Utilities
       
       # Setup our Ozone environment
       @protocol = Punchblock::Protocol::Ozone
-      @tropo2  = Punchblock::Transport::XMPP.new @protocol,
-                                                 { :username         => options[:username],
-                                                   :password         => options[:password],
-                                                   :wire_logger      => @wire_logger,
-                                                   :transport_logger => @transport_logger }
+      @tropo2  = @protocol::Connection.new({ :username         => options[:username],
+                                             :password         => options[:password],
+                                             :wire_logger      => @wire_logger,
+                                             :transport_logger => @transport_logger })
       @event_queue = @tropo2.event_queue
       
       start_tropo2
