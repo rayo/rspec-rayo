@@ -79,11 +79,11 @@ module Tropo2Utilities
       initialize_logging options
       
       # Setup our Ozone environment
-      @protocol = Punchblock::Protocol::Ozone
-      @tropo2  = @protocol::Connection.new({ :username         => options[:username],
-                                             :password         => options[:password],
-                                             :wire_logger      => @wire_logger,
-                                             :transport_logger => @transport_logger })
+      #@protocol = Punchblock::Protocol::Ozone
+      @tropo2  = Punchblock::Protocol::Ozone.new({ :username         => options[:username],
+                                                   :password         => options[:password],
+                                                   :wire_logger      => @wire_logger,
+                                                   :transport_logger => @transport_logger })
       @event_queue = @tropo2.event_queue
       
       start_tropo2
