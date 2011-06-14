@@ -5,50 +5,49 @@ module Tropo2Utilities
     
     def initialize(options)
       @call_event = options[:call_event]
-      @punchblock = options[:punchblock]
       @protocol   = options[:protocol]
       @queue      = options[:queue]
       @timeout    = options[:timeout] || 5
     end
     
     def accept
-      @punchblock.write @call_event, @protocol::Accept.new
+      write @protocol.class::Command::Accept.new
     end
     
     def answer
-      @punchblock.write @call_event, @protocol::Answer.new
+      write @protocol.class::Command::Answer.new
     end
     
     def ask(options)
-      @punchblock.write @call_event, @protocol::Ask.new(options)
+      write @protocol.class::Command::Ask.new(options)
     end
     
     def conference(options)
-      @punchblock.write @call_event, @protocol::Conference.new(options)
+      write @protocol.class::Command::Conference.new(options)
     end
     
     def dial(options)
-      @punchblock.write @call_event, @protocol::Dial.new(options)
+      write @protocol.class::Command::Dial.new(options)
     end
     
     def hangup
-      @punchblock.write @call_event, @protocol::Hangup.new
+      write @protocol.class::Command::Hangup.new
     end
 
     def redirect(options)
-      @punchblock.write @call_event, @protocol::Redirect.new(options)
+      write @protocol.class::Command::Redirect.new(options)
     end
     
     def reject(reason=nil)
-      @punchblock.write @call_event, @protocol::Reject.new(reason)
+      write @protocol.class::Command::Reject.new(reason)
     end
     
     def say(options)
-      @punchblock.write @call_event, @protocol::Say.new(options)
+      write @protocol.class::Command::Say.new(options)
     end
     
     def transfer(options)
-      @punchblock.write @call_event, @protocol::Transfer.new(options)
+      write @protocol.class::Command::Transfer.new(options)
     end
     
     def last_event?(timeout=nil)  
@@ -67,6 +66,12 @@ module Tropo2Utilities
         queue_item = e.to_s
       end
       queue_item
+    end
+    
+    private 
+    
+    def write(msg)
+      @protocol.write @call_event, msg
     end
   end
 end

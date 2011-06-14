@@ -2,9 +2,9 @@ require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
 describe "RspecTropo2" do
   it "should validate an answer event" do
-    answer_event = mock(Punchblock::Protocol::Ozone::Info)
-    answer_event.stub!(:class).and_return(Punchblock::Protocol::Ozone::Info)
-    answer_event.stub!(:type).and_return(:answer)
+    answer_event = mock(Punchblock::Protocol::Ozone::Event)
+    answer_event.stub!(:class).and_return(Punchblock::Protocol::Ozone::Event)
+    answer_event.stub!(:reason).and_return(:answer)
     answer_event.stub!(:call_id).and_return("3b7720bf-d5dc-4f4f-a837-d7338ec18b3a@10.0.1.11")
     
     answer_event.should be_a_valid_answer_event
@@ -29,117 +29,124 @@ describe "RspecTropo2" do
   end
   
   it "should validate a hangup event" do
-    hangup_event = mock(Punchblock::Protocol::Ozone::End)
-    hangup_event.stub!(:class).and_return(Punchblock::Protocol::Ozone::End)
-    hangup_event.stub!(:type).and_return(:hangup)
+    hangup_event = mock(Punchblock::Protocol::Ozone::Event)
+    hangup_event.stub!(:class).and_return(Punchblock::Protocol::Ozone::Event)
+    hangup_event.stub!(:reason).and_return(:hangup)
+    hangup_event.stub!(:namespace_href).and_return('urn:xmpp:ozone:1')
     hangup_event.stub!(:call_id).and_return("3b7720bf-d5dc-4f4f-a837-d7338ec18b3a@10.0.1.11")
     
     hangup_event.should be_a_valid_hangup_event
   end
   
   it "should validate a successful say event" do
-    say_event = mock(Punchblock::Protocol::Ozone::Complete)
-    say_event.stub!(:class).and_return(Punchblock::Protocol::Ozone::Complete)
+    say_event = mock(Punchblock::Protocol::Ozone::Event)
+    say_event.stub!(:class).and_return(Punchblock::Protocol::Ozone::Event)
     say_event.stub!(:call_id).and_return('5d6fe904-103d-4551-bd47-cf212c37b8c7')
-    say_event.stub!(:cmd_id).and_return('6d5bf745-8fa9-4e78-be18-6e6a48393f13')
-    say_event.stub!(:attributes).and_return({ :reason => 'SUCCESS' })
-    say_event.stub!(:xmlns).and_return('urn:xmpp:ozone:say:1')
+    say_event.stub!(:command_id).and_return('6d5bf745-8fa9-4e78-be18-6e6a48393f13')
+    say_event.stub_chain(:reason, :name).and_return(:success)
+    say_event.stub_chain(:reason, :namespace_href).and_return('urn:xmpp:ozone:say:complete:1')
     
-    say_event.should be_a_valid_successful_say_event
+    say_event.should be_a_valid_say_event
   end
   
   it "should validate a stopped say event" do
-    say_event = mock(Punchblock::Protocol::Ozone::Complete)
-    say_event.stub!(:class).and_return(Punchblock::Protocol::Ozone::Complete)
+    say_event = mock(Punchblock::Protocol::Ozone::Event)
+    say_event.stub!(:class).and_return(Punchblock::Protocol::Ozone::Event)
     say_event.stub!(:call_id).and_return('5d6fe904-103d-4551-bd47-cf212c37b8c7')
-    say_event.stub!(:cmd_id).and_return('6d5bf745-8fa9-4e78-be18-6e6a48393f13')
-    say_event.stub!(:xmlns).and_return('urn:xmpp:ozone:say:1')
-    say_event.stub!(:attributes).and_return({ :reason => 'STOP' })
+    say_event.stub!(:command_id).and_return('6d5bf745-8fa9-4e78-be18-6e6a48393f13')
+    say_event.stub_chain(:reason, :namespace_href).and_return('urn:xmpp:ozone:say:1')
+    say_event.stub_chain(:reason, :name).and_return(:stop)
     
     say_event.should be_a_valid_stopped_say_event
   end
   
   it "should validate an ask event" do
-    ask_event = mock(Punchblock::Protocol::Ozone::Complete)
-    ask_event.stub!(:class).and_return(Punchblock::Protocol::Ozone::Complete)
+    ask_event = mock(Punchblock::Protocol::Ozone::Event)
+    ask_event.stub!(:class).and_return(Punchblock::Protocol::Ozone::Event)
     ask_event.stub!(:call_id).and_return('5d6fe904-103d-4551-bd47-cf212c37b8c7')
-    ask_event.stub!(:cmd_id).and_return('6d5bf745-8fa9-4e78-be18-6e6a48393f13')
-    ask_event.stub!(:xmlns).and_return('urn:xmpp:ozone:ask:1')
+    ask_event.stub!(:command_id).and_return('6d5bf745-8fa9-4e78-be18-6e6a48393f13')
+    ask_event.stub!(:namespace_href).and_return('urn:xmpp:ozone:ext:1')
+    ask_event.stub_chain(:reason, :namespace_href).and_return('urn:xmpp:ozone:ask:complete:1')
     
     ask_event.should be_a_valid_ask_event
   end
 
   it "should validate a stopped ask event" do
-    ask_event = mock(Punchblock::Protocol::Ozone::Complete)
-    ask_event.stub!(:class).and_return(Punchblock::Protocol::Ozone::Complete)
+    ask_event = mock(Punchblock::Protocol::Ozone::Event)
+    ask_event.stub!(:class).and_return(Punchblock::Protocol::Ozone::Event)
     ask_event.stub!(:call_id).and_return('5d6fe904-103d-4551-bd47-cf212c37b8c7')
-    ask_event.stub!(:cmd_id).and_return('6d5bf745-8fa9-4e78-be18-6e6a48393f13')
-    ask_event.stub!(:xmlns).and_return('urn:xmpp:ozone:ask:1')
-    ask_event.stub!(:attributes).and_return({ :reason => 'STOP' })
+    ask_event.stub!(:command_id).and_return('6d5bf745-8fa9-4e78-be18-6e6a48393f13')
+    ask_event.stub!(:namespace_href).and_return('urn:xmpp:ozone:ask:1')
+    ask_event.stub!(:reason).and_return(:stop)
     
     ask_event.should be_a_valid_stopped_ask_event
   end
   
   it "should validate a NOINPUT event" do
-    noinput_event = mock(Punchblock::Protocol::Ozone::Complete)
-    noinput_event.stub!(:class).and_return(Punchblock::Protocol::Ozone::Complete)
+    noinput_event = mock(Punchblock::Protocol::Ozone::Event)
+    noinput_event.stub!(:class).and_return(Punchblock::Protocol::Ozone::Event)
     noinput_event.stub!(:call_id).and_return('5d6fe904-103d-4551-bd47-cf212c37b8c7')
-    noinput_event.stub!(:cmd_id).and_return('6d5bf745-8fa9-4e78-be18-6e6a48393f13')
-    noinput_event.stub!(:xmlns).and_return('urn:xmpp:ozone:ask:1')
-    noinput_event.stub!(:attributes).and_return({ :reason => 'NOINPUT' })
+    noinput_event.stub!(:command_id).and_return('6d5bf745-8fa9-4e78-be18-6e6a48393f13')
+    noinput_event.stub!(:namespace_href).and_return('urn:xmpp:ozone:ext:1')
+    noinput_event.stub_chain(:reason, :namespace_href).and_return('urn:xmpp:ozone:ask:complete:1')
+    noinput_event.stub_chain(:reason, :name).and_return(:noinput)
     
     noinput_event.should be_a_valid_noinput_event
   end
   
   it "should validate a NOMATCH event" do
-    nomatch_event = mock(Punchblock::Protocol::Ozone::Complete)
-    nomatch_event.stub!(:class).and_return(Punchblock::Protocol::Ozone::Complete)
+    nomatch_event = mock(Punchblock::Protocol::Ozone::Event)
+    nomatch_event.stub!(:class).and_return(Punchblock::Protocol::Ozone::Event)
     nomatch_event.stub!(:call_id).and_return('5d6fe904-103d-4551-bd47-cf212c37b8c7')
-    nomatch_event.stub!(:cmd_id).and_return('6d5bf745-8fa9-4e78-be18-6e6a48393f13')
-    nomatch_event.stub!(:xmlns).and_return('urn:xmpp:ozone:ask:1')
-    nomatch_event.stub!(:attributes).and_return({ :reason => 'NOMATCH' })
+    nomatch_event.stub!(:command_id).and_return('6d5bf745-8fa9-4e78-be18-6e6a48393f13')
+    nomatch_event.stub!(:namespace_href).and_return('urn:xmpp:ozone:ext:1')
+    nomatch_event.stub_chain(:reason, :namespace_href).and_return('urn:xmpp:ozone:ask:complete:1')
+    nomatch_event.stub_chain(:reason, :name).and_return(:nomatch)
     
     nomatch_event.should be_a_valid_nomatch_event
   end
   
   it "should validate a conference event" do
-    conference_event = mock(Punchblock::Protocol::Ozone::Complete)
-    conference_event.stub!(:class).and_return(Punchblock::Protocol::Ozone::Complete)
+    conference_event = mock(Punchblock::Protocol::Ozone::Event)
+    conference_event.stub!(:class).and_return(Punchblock::Protocol::Ozone::Event)
     conference_event.stub!(:call_id).and_return('5d6fe904-103d-4551-bd47-cf212c37b8c7')
-    conference_event.stub!(:cmd_id).and_return('6d5bf745-8fa9-4e78-be18-6e6a48393f13')
-    conference_event.stub!(:xmlns).and_return('urn:xmpp:ozone:conference:1')
-    conference_event.stub!(:attributes).and_return({ :reason => 'HANGUP' })
+    conference_event.stub!(:command_id).and_return('6d5bf745-8fa9-4e78-be18-6e6a48393f13')
+    conference_event.stub!(:namespace_href).and_return('urn:xmpp:ozone:ext:1')
+    conference_event.stub_chain(:reason, :name).and_return(:hangup)
     
     conference_event.should be_a_valid_conference_event
   end
   
   it "should validate a transfer event" do
-    transfer_event = mock(Punchblock::Protocol::Ozone::Complete)
-    transfer_event.stub!(:class).and_return(Punchblock::Protocol::Ozone::Complete)
+    transfer_event = mock(Punchblock::Protocol::Ozone::Event)
+    transfer_event.stub!(:class).and_return(Punchblock::Protocol::Ozone::Event)
     transfer_event.stub!(:call_id).and_return('5d6fe904-103d-4551-bd47-cf212c37b8c7')
-    transfer_event.stub!(:cmd_id).and_return('6d5bf745-8fa9-4e78-be18-6e6a48393f13')
-    transfer_event.stub!(:xmlns).and_return('urn:xmpp:ozone:transfer:1')
+    transfer_event.stub!(:command_id).and_return('6d5bf745-8fa9-4e78-be18-6e6a48393f13')
+    transfer_event.stub!(:namespace_href).and_return('urn:xmpp:ozone:ext:1')
+    transfer_event.stub_chain(:reason, :namespace_href).and_return('urn:xmpp:ozone:transfer:complete:1')
+    transfer_event.stub_chain(:reason, :name).and_return(:success)
 
     transfer_event.should be_a_valid_transfer_event
   end
   
   it "should validate a transfer timeout event" do
-    transfer_event = mock(Punchblock::Protocol::Ozone::Complete)
-    transfer_event.stub!(:class).and_return(Punchblock::Protocol::Ozone::Complete)
+    transfer_event = mock(Punchblock::Protocol::Ozone::Event)
+    transfer_event.stub!(:class).and_return(Punchblock::Protocol::Ozone::Event)
     transfer_event.stub!(:call_id).and_return('5d6fe904-103d-4551-bd47-cf212c37b8c7')
-    transfer_event.stub!(:cmd_id).and_return('6d5bf745-8fa9-4e78-be18-6e6a48393f13')
-    transfer_event.stub!(:xmlns).and_return('urn:xmpp:ozone:transfer:1')
-    transfer_event.stub!(:attributes).and_return({ :reason => 'TIMEOUT' })
+    transfer_event.stub!(:command_id).and_return('6d5bf745-8fa9-4e78-be18-6e6a48393f13')
+    transfer_event.stub!(:namespace_href).and_return('urn:xmpp:ozone:ext:1')
+    transfer_event.stub_chain(:reason, :namespace_href).and_return('urn:xmpp:ozone:transfer:complete:1')
+    transfer_event.stub_chain(:reason, :name).and_return(:timeout)
 
     transfer_event.should be_a_valid_transfer_timeout_event
   end
   
   it "should validate a ring event" do
-    ring_event = mock(Punchblock::Protocol::Ozone::Info)
-    ring_event.stub!(:class).and_return(Punchblock::Protocol::Ozone::Info)
+    ring_event = mock(Punchblock::Protocol::Ozone::Event)
+    ring_event.stub!(:class).and_return(Punchblock::Protocol::Ozone::Event)
     ring_event.stub!(:call_id).and_return('5d6fe904-103d-4551-bd47-cf212c37b8c7')
-    ring_event.stub!(:xmlns).and_return('urn:xmpp:ozone:info:1')
-    ring_event.stub!(:type).and_return(:ring)
+    ring_event.stub!(:namespace_href).and_return('urn:xmpp:ozone:info:1')
+    ring_event.stub!(:reason).and_return(:ring)
 
     ring_event.should be_a_valid_ring_event
   end

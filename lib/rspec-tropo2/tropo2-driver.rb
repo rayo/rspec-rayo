@@ -17,8 +17,7 @@ module Tropo2Utilities
     end
     
     def dial(options)
-      call = Call.new({ :punchblock => @tropo2,
-                        :protocol   => @protocol,
+      call = Call.new({ :protocol   => @tropo2,
                         :queue      => Queue.new,
                         :timeout    => @queue_timeout  })
       call.dial(options)
@@ -38,8 +37,7 @@ module Tropo2Utilities
           when 'Punchblock::Call'
             queue = Queue.new
             call = Call.new({ :call_event => event,
-                              :punchblock => @tropo2,
-                              :protocol   => @protocol,
+                              :protocol   => @tropo2,
                               :queue      => queue,
                               :timeout    => @queue_timeout  })
             @calls.merge!({ event.call_id => call })
