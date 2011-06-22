@@ -25,18 +25,16 @@ end
 
 include Tropo2Helpers
 
-RSpec::Matchers.define :be_a_valid_answer_event do
+RSpec::Matchers.define :be_a_valid_answered_event do
   match_for_should do |event|
     execution_expired?(event)
     
-    validate_class(event.class)
-    
-    uuid_match?(event.call_id, 'call_id')
-    
-    if event.reason != :answer
-      @error = "got :#{event.reason.to_s} - expected :answer"
+    if event.class != Punchblock::Protocol::Ozone::Event::Answered
+      @error = 'not an instance of Punchblock::Protocol::Ozone::Event::Answered'
       raise RSpec::Expectations::ExpectationNotMetError
     end
+    
+    uuid_match?(event.call_id, 'call_id')
     
     true if !@error
   end
@@ -315,9 +313,13 @@ RSpec::Matchers.define :be_a_valid_say_hangup_event do
   match_for_should do |event|
     execution_expired?(event)
     
-    validate_class(event.class)
-    uuid_match?(event.call_id, 'call_id')
+    if event.class != Punchblock::Protocol::Ozone::Event::Complete
+      @error = 'not an instance of Punchblock::Protocol::Ozone::Event::Complete'
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
     
+    uuid_match?(event.call_id, 'call_id')
+
     if event.reason.name != :hangup
       @error = "got :#{event.reason.to_s} - expected :hangup"
       raise RSpec::Expectations::ExpectationNotMetError
@@ -340,13 +342,46 @@ RSpec::Matchers.define :be_a_valid_say_hangup_event do
   end
 end
 
+RSpec::Matchers.define :be_a_valid_redirect_event do
+  match_for_should do |event|
+    execution_expired?(event)
+    
+    if event.class != Punchblock::Protocol::Ozone::Event::End
+      @error = 'not an instance of Punchblock::Protocol::Ozone::Event::End'
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
+    
+    uuid_match?(event.call_id, 'call_id')
+
+    if event.reason != :redirect
+      @error = "got :#{event.reason.to_s} - expected :redirect"
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
+    
+    true if !@error
+  end
+  
+  failure_message_for_should do |actual|
+    "The reject event was not valid: #{@error}"
+  end
+
+  description do
+    "Validate a reject event"
+  end
+end
+
 RSpec::Matchers.define :be_a_valid_reject_event do
   match_for_should do |event|
     execution_expired?(event)
     
-    validate_class(event.class)
-    uuid_match?(event.call_id, 'call_id')
+    #validate_class(event.class)
+    if event.class != Punchblock::Protocol::Ozone::Event::End
+      @error = 'not an instance of Punchblock::Protocol::Ozone::Event::End'
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
     
+    uuid_match?(event.call_id, 'call_id')
+
     if event.reason != :reject
       @error = "got :#{event.reason.to_s} - expected :reject"
       raise RSpec::Expectations::ExpectationNotMetError
@@ -364,21 +399,18 @@ RSpec::Matchers.define :be_a_valid_reject_event do
   end
 end
 
-RSpec::Matchers.define :be_a_valid_ring_event do
+RSpec::Matchers.define :be_a_valid_ringing_event do
   match_for_should do |event|
     execution_expired?(event)
-    
-    validate_class(event.class)
     uuid_match?(event.call_id, 'call_id')
     
-    # Awaiting this fix to be a complete test: https://github.com/tropo/punchblock/issues/25
-    # if event.namespace_href != 'urn:xmpp:ozone:info:1'
-    #   @error = "expected urn:xmpp:ozone:info:1 for xmlns - got #{event.namespace_href}"
-    #   raise RSpec::Expectations::ExpectationNotMetError
-    # end
+    if event.class != Punchblock::Protocol::Ozone::Event::Ringing
+      @error = 'not an instance of Punchblock::Protocol::Ozone::Event::Ringing'
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
     
-    if event.reason != :ring
-      @error = "expected :ring for type - got :#{event.reason.to_s}"
+    if event.namespace_href != 'urn:xmpp:ozone:1'
+      @error = "expected urn:xmpp:ozone:1 for xmlns - got #{event.namespace_href}"
       raise RSpec::Expectations::ExpectationNotMetError
     end
     
@@ -396,7 +428,6 @@ end
 
 RSpec::Matchers.define :be_a_valid_stopped_ask_event do
   match_for_should do |event|
-    ap event
     execution_expired?(event)
     
     if event.class != Punchblock::Protocol::Ozone::Event::Complete
@@ -425,7 +456,7 @@ RSpec::Matchers.define :be_a_valid_stopped_ask_event do
   end
 
   description do
-    "Validate an say event"
+    "Validate an ask event"
   end
 end
 
@@ -433,7 +464,11 @@ RSpec::Matchers.define :be_a_valid_say_event do
   match_for_should do |event|
     execution_expired?(event)
     
-    validate_class(event.class)
+    if event.class != Punchblock::Protocol::Ozone::Event::Complete
+      @error = 'not an instance of Punchblock::Protocol::Ozone::Event::Complete '
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
+    
     uuid_match?(event.call_id, 'call_id')
     uuid_match?(event.command_id, 'command_id')
     
@@ -493,7 +528,11 @@ RSpec::Matchers.define :be_a_valid_transfer_event do
   match_for_should do |event|
     execution_expired?(event)
     
-    validate_class(event.class)
+    if event.class != Punchblock::Protocol::Ozone::Event::Complete
+      @error = 'not an instance of Punchblock::Protocol::Ozone::Event::Complete '
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
+    
     uuid_match?(event.call_id, 'call_id')
     uuid_match?(event.command_id, 'cmd_id')
     
@@ -528,7 +567,11 @@ RSpec::Matchers.define :be_a_valid_transfer_timeout_event do
   match_for_should do |event|
     execution_expired?(event)
     
-    validate_class(event.class)
+    if event.class != Punchblock::Protocol::Ozone::Event::Complete
+      @error = 'not an instance of Punchblock::Protocol::Ozone::Event::Complete '
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
+    
     uuid_match?(event.call_id, 'call_id')
     uuid_match?(event.command_id, 'cmd_id')
     

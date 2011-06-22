@@ -42,12 +42,8 @@ module Tropo2Utilities
                               :timeout    => @queue_timeout  })
             @calls.merge!({ event.call_id => call })
             @call_queue.push call
-          when 'Punchblock::Protocol::Ozone::Info'
-            if event.type == :ring
-              @ring_event_queue.push event
-            else
-              @calls[event.call_id].queue.push event unless event.nil?
-            end
+          when 'Punchblock::Protocol::Ozone::Event::Ringing'
+            @ring_event_queue.push event
           else
             # Temp based on this nil returned on conference: https://github.com/tropo/punchblock/issues/27
             begin
