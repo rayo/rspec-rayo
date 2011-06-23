@@ -206,8 +206,8 @@ RSpec::Matchers.define :be_a_valid_nomatch_event do
       raise RSpec::Expectations::ExpectationNotMetError
     end
     
-    if event.reason.name != :nomatch
-      @error = "expected :noinput for reason - got #{event.reason}"
+    if event.reason.class != Punchblock::Protocol::Ozone::Command::Ask::Complete::NoMatch
+      @error = "expected Punchblock::Protocol::Ozone::Command::Ask::Complete::NoMatch for reason.class - got #{event.reason.class}"
       raise RSpec::Expectations::ExpectationNotMetError
     end
     
