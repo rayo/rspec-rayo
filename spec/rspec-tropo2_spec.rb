@@ -154,4 +154,13 @@ describe "RspecTropo2" do
 
     ring_event.should be_a_valid_ring_event
   end
+
+  it "should validate a DTMF event" do
+    ring_event = mock(Punchblock::Protocol::Ozone::Event::DTMF)
+    ring_event.stub!(:is_a?).with(Punchblock::Protocol::Ozone::Event::DTMF).and_return true
+    ring_event.stub!(:call_id).and_return('5d6fe904-103d-4551-bd47-cf212c37b8c7')
+    ring_event.stub!(:namespace_href).and_return('urn:xmpp:ozone:1')
+
+    ring_event.should be_a_valid_dtmf_event
+  end
 end
