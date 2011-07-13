@@ -2,20 +2,20 @@ module Tropo2Utilities
   class Tropo2Driver
     attr_reader :event_queue, :threads
     attr_accessor :calls
-    
+
     def initialize(options)
       @calls          = {}
       @call_queue     = Queue.new
       @ring_event_queue = Queue.new
       @queue_timeout  = options[:queue_timeout] || 5
-      
+
       initialize_tropo2 options
     end
-    
+
     def get_call
       read_queue(@call_queue)
     end
-    
+
     def dial(options)
       call = Call.new({ :protocol   => @tropo2,
                         :queue      => Queue.new,
@@ -26,11 +26,11 @@ module Tropo2Utilities
       @calls.merge!({ call.call_event.call_id => call })
       call
     end
-    
+
     def start_event_dispatcher
       @threads << Thread.new do
         event = nil
-        
+
         until event == 'STOP' do
           event = read_queue(@event_queue)
           case event.class.to_s
@@ -53,10 +53,10 @@ module Tropo2Utilities
             end
           end
         end
-        
+
       end
     end
-        
+
     def read_queue(queue)
       queue_item = nil
       begin
@@ -68,10 +68,10 @@ module Tropo2Utilities
       end
       queue_item
     end
-    
+
     def initialize_tropo2(options)
       initialize_logging options
-      
+
       # Setup our Ozone environment
       #@protocol = Punchblock::Protocol::Ozone
       @tropo2  = Punchblock::Protocol::Ozone.new({ :username         => options[:username],
@@ -79,20 +79,20 @@ module Tropo2Utilities
                                                    :wire_logger      => @wire_logger,
                                                    :transport_logger => @transport_logger })
       @event_queue = @tropo2.event_queue
-      
+
       start_tropo2
     end
-    
+
     def initialize_logging(options)
       @wire_logger = options[:wire_logger]
       @wire_logger.level = options[:log_level]
       #@wire_logger.info "Starting up..." if @wire_logger
-      
+
       @transport_logger = options[:transport_logger]
       @transport_logger.level = options[:log_level]
       #@transport_logger.info "Starting up..." if @transport_logger
     end
-    
+
     def start_tropo2
       # Launch the Ozone thread
       @threads = []
