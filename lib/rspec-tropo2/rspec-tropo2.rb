@@ -15,8 +15,8 @@ module Tropo2Helpers
     end
   end
 
-  def validate_class(klass)
-    unless klass == Punchblock::Protocol::Ozone::Event
+  def validate_class(object)
+    unless object.is_a?(Punchblock::Protocol::Ozone::Event)
       @error = 'not an instance of Punchblock::Protocol::Ozone::Event'
       raise RSpec::Expectations::ExpectationNotMetError
     end
@@ -439,7 +439,7 @@ RSpec::Matchers.define :be_a_valid_stopped_ask_event do
     uuid_match? event.command_id, 'cmd_id'
 
     unless event.reason.name == :hangup
-      @error = "expected :stop for attributes[:reason] - got #{event.attributes[:reason]}"
+      @error = "expected :hangup for event.reason.name - got #{event.reason.name.inspect}"
       raise RSpec::Expectations::ExpectationNotMetError
     end
 
@@ -498,7 +498,7 @@ RSpec::Matchers.define :be_a_valid_stopped_say_event do
   match_for_should do |event|
     execution_expired? event
 
-    validate_class event.class
+    validate_class event
 
     uuid_match? event.call_id, 'call_id'
     uuid_match? event.command_id, 'cmd_id'
