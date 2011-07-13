@@ -38,7 +38,7 @@ module Tropo2Utilities
       write @protocol.class::Command::Redirect.new(options)
     end
 
-    def reject(reason=nil)
+    def reject(reason = nil)
       write @protocol.class::Command::Reject.new(reason)
     end
 
@@ -50,22 +50,17 @@ module Tropo2Utilities
       write @protocol.class::Command::Transfer.new(options)
     end
 
-    def last_event?(timeout=nil)
+    def last_event?(timeout = nil)
       timeout = timeout || 2
       true if next_event(timeout) == "execution expired"
     end
 
-    def next_event(timeout=nil)
-      timeout = timeout || @timeout
-      queue_item = nil
+    def next_event(timeout = nil)
       begin
-        Timeout::timeout(timeout) {
-          queue_item = @queue.pop
-        }
+        Timeout::timeout(timeout || @timeout) { @queue.pop }
       rescue Timeout::Error => e
-        queue_item = e.to_s
+        e.to_s
       end
-      queue_item
     end
 
     private

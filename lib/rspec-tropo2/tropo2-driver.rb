@@ -4,26 +4,27 @@ module Tropo2Utilities
     attr_accessor :calls
 
     def initialize(options)
-      @calls          = {}
-      @call_queue     = Queue.new
+      @calls            = {}
+      @call_queue       = Queue.new
       @ring_event_queue = Queue.new
-      @queue_timeout  = options[:queue_timeout] || 5
+      @queue_timeout    = options[:queue_timeout] || 5
+      @threads          = []
 
       initialize_tropo2 options
     end
 
     def get_call
-      read_queue(@call_queue)
+      read_queue @call_queue
     end
 
     def dial(options)
-      call = Call.new({ :protocol   => @tropo2,
-                        :queue      => Queue.new,
-                        :timeout    => @queue_timeout  })
-      call.dial(options)
-      call.ring_event = read_queue(@ring_event_queue)
-      call.call_event = Punchblock::Call.new(call.ring_event.call_id, nil, { 'x-tropo2-origin' => 'rspec-tropo2' })
-      @calls.merge!({ call.call_event.call_id => call })
+      call = Call.new :protocol   => @tropo2,
+                      :queue      => Queue.new,
+                      :timeout    => @queue_timeout
+      call.dial options
+      call.ring_event = read_queue @ring_event_queue
+      call.call_event = Punchblock::Call.new call.ring_event.call_id, nil, 'x-tropo2-origin' => 'rspec-tropo2'
+      @calls.merge! call.call_event.call_id => call
       call
     end
 
@@ -32,17 +33,17 @@ module Tropo2Utilities
         event = nil
 
         until event == 'STOP' do
-          event = read_queue(@event_queue)
-          case event.class.to_s
-          when 'Punchblock::Call'
+          event = read_queue @event_queue
+          case event
+          when Punchblock::Call
             queue = Queue.new
-            call = Call.new({ :call_event => event,
-                              :protocol   => @tropo2,
-                              :queue      => queue,
-                              :timeout    => @queue_timeout  })
-            @calls.merge!({ event.call_id => call })
+            call = Call.new :call_event => event,
+                            :protocol   => @tropo2,
+                            :queue      => queue,
+                            :timeout    => @queue_timeout
+            @calls.merge! event.call_id => call
             @call_queue.push call
-          when 'Punchblock::Protocol::Ozone::Event::Ringing'
+          when Punchblock::Protocol::Ozone::Event::Ringing
             @ring_event_queue.push event
           else
             # Temp based on this nil returned on conference: https://github.com/tropo/punchblock/issues/27
@@ -58,15 +59,11 @@ module Tropo2Utilities
     end
 
     def read_queue(queue)
-      queue_item = nil
       begin
-        Timeout::timeout(@queue_timeout) {
-          queue_item = queue.pop
-        }
+        Timeout::timeout(@queue_timeout) { queue.pop }
       rescue Timeout::Error => e
-        queue_item = e.to_s
+        e.to_s
       end
-      queue_item
     end
 
     def initialize_tropo2(options)
@@ -74,10 +71,10 @@ module Tropo2Utilities
 
       # Setup our Ozone environment
       #@protocol = Punchblock::Protocol::Ozone
-      @tropo2  = Punchblock::Protocol::Ozone.new({ :username         => options[:username],
-                                                   :password         => options[:password],
-                                                   :wire_logger      => @wire_logger,
-                                                   :transport_logger => @transport_logger })
+      @tropo2  = Punchblock::Protocol::Ozone.new :username         => options[:username],
+                                                 :password         => options[:password],
+                                                 :wire_logger      => @wire_logger,
+                                                 :transport_logger => @transport_logger
       @event_queue = @tropo2.event_queue
 
       start_tropo2
@@ -95,7 +92,6 @@ module Tropo2Utilities
 
     def start_tropo2
       # Launch the Ozone thread
-      @threads = []
       @threads << Thread.new do
         begin
           @tropo2.run
