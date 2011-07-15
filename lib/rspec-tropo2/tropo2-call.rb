@@ -50,6 +50,10 @@ module Tropo2Utilities
       write @protocol.class::Command::Transfer.new(options)
     end
 
+    def record(options)
+      write @protocol.class::Command::Record.new(options)
+    end
+
     def last_event?(timeout = nil)
       timeout = timeout || 2
       true if next_event(timeout) == "execution expired"
