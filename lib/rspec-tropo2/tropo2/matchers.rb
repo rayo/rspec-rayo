@@ -52,22 +52,6 @@ RSpec::Matchers.define :be_a_valid_complete_hangup_event do
   end
 end
 
-RSpec::Matchers.define :be_a_valid_control_event do
-  match_for_should do |control_event|
-    execution_expired? control_event
-
-    # reply[:stanza]['iq']['type'].should eql "result"
-  end
-
-  failure_message_for_should do |actual|
-    "The control event was not valid: #{@error}"
-  end
-
-  description do
-    "Validate an control event"
-  end
-end
-
 RSpec::Matchers.define :be_a_valid_redirect_event do
   match_for_should do |event|
     execution_expired? event
