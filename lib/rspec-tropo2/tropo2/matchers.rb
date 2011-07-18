@@ -35,8 +35,8 @@ RSpec::Matchers.define :be_a_valid_complete_hangup_event do
     uuid_match? event.call_id, 'call_id'
     uuid_match? event.command_id, 'cmd_id'
 
-    unless event.reason.name == :hangup
-      @error = "expected :hangup for reason.name - got #{reason.name}"
+    unless event.reason.is_a?(Punchblock::Protocol::Ozone::Event::Complete::Hangup)
+      @error = "got #{event.reason.class} - expected Punchblock::Protocol::Ozone::Event::Complete::Hangup"
       raise RSpec::Expectations::ExpectationNotMetError
     end
 
@@ -48,84 +48,6 @@ RSpec::Matchers.define :be_a_valid_complete_hangup_event do
   end
 
   description do
-    "Validate an ask event"
-  end
-end
-
-RSpec::Matchers.define :be_a_valid_redirect_event do
-  match_for_should do |event|
-    execution_expired? event
-
-    unless event.is_a?(Punchblock::Protocol::Ozone::Event::End)
-      @error = 'not an instance of Punchblock::Protocol::Ozone::Event::End'
-      raise RSpec::Expectations::ExpectationNotMetError
-    end
-
-    uuid_match? event.call_id, 'call_id'
-
-    unless event.reason == :redirect
-      @error = "got :#{event.reason.to_s} - expected :redirect"
-      raise RSpec::Expectations::ExpectationNotMetError
-    end
-
-    true unless @error
-  end
-
-  failure_message_for_should do |actual|
-    "The reject event was not valid: #{@error}"
-  end
-
-  description do
-    "Validate a reject event"
-  end
-end
-
-RSpec::Matchers.define :be_a_valid_reject_event do
-  match_for_should do |event|
-    execution_expired? event
-
-    unless event.is_a?(Punchblock::Protocol::Ozone::Event::End)
-      @error = 'not an instance of Punchblock::Protocol::Ozone::Event::End'
-      raise RSpec::Expectations::ExpectationNotMetError
-    end
-
-    uuid_match? event.call_id, 'call_id'
-
-    unless event.reason == :reject
-      @error = "got :#{event.reason.to_s} - expected :reject"
-      raise RSpec::Expectations::ExpectationNotMetError
-    end
-
-    true unless @error
-  end
-
-  failure_message_for_should do |actual|
-    "The reject event was not valid: #{@error}"
-  end
-
-  description do
-    "Validate a reject event"
-  end
-end
-
-RSpec::Matchers.define :be_a_valid_ringing_event do
-  match_for_should do |event|
-    execution_expired? event
-    uuid_match? event.call_id, 'call_id'
-
-    unless event.is_a?(Punchblock::Protocol::Ozone::Event::Ringing)
-      @error = 'not an instance of Punchblock::Protocol::Ozone::Event::Ringing'
-      raise RSpec::Expectations::ExpectationNotMetError
-    end
-
-    true unless @error
-  end
-
-  failure_message_for_should do |actual|
-    "The ring event was not valid: #{@error}"
-  end
-
-  description do
-    "Validate a ring event"
+    "be a valid complete hangup event"
   end
 end

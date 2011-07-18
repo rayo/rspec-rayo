@@ -34,6 +34,16 @@ describe "Tropo2 call control matchers" do
     it { should be_a_valid_call_event }
   end
 
+  describe "an answered event" do
+    subject do
+      Punchblock::Protocol::Ozone::Event::Answered.new do |event|
+        event.call_id = "3b7720bf-d5dc-4f4f-a837-d7338ec18b3a@10.0.1.11"
+      end
+    end
+
+    it { should be_a_valid_answered_event }
+  end
+
   describe "a hangup event" do
     subject do
       Punchblock::Protocol::Ozone::Event::End.new do |end_event|
@@ -45,14 +55,47 @@ describe "Tropo2 call control matchers" do
     it { should be_a_valid_hangup_event }
   end
 
-  it "should validate a ring event" do
-    pending
-    ring_event = mock(Punchblock::Protocol::Ozone::Event)
-    ring_event.stub!(:is_a?).with(Punchblock::Protocol::Ozone::Event).and_return true
-    ring_event.stub!(:call_id).and_return('5d6fe904-103d-4551-bd47-cf212c37b8c7')
-    ring_event.stub!(:namespace_href).and_return('urn:xmpp:ozone:info:1')
-    ring_event.stub!(:reason).and_return(:ring)
+  describe "a ringing event" do
+    subject do
+      Punchblock::Protocol::Ozone::Event::Ringing.new do |event|
+        event.call_id = "3b7720bf-d5dc-4f4f-a837-d7338ec18b3a@10.0.1.11"
+      end
+    end
 
-    ring_event.should be_a_valid_ring_event
+    it { should be_a_valid_ringing_event }
+  end
+
+  describe "a complete hangup event" do
+    subject do
+      Punchblock::Protocol::Ozone::Event::Complete.new.tap do |event|
+        event.call_id = '5d6fe904-103d-4551-bd47-cf212c37b8c7'
+        event.command_id = '6d5bf745-8fa9-4e78-be18-6e6a48393f13'
+        event << Punchblock::Protocol::Ozone::Event::Complete::Hangup.new
+      end
+    end
+
+    it { should be_a_valid_complete_hangup_event }
+  end
+
+  describe "a redirect event" do
+    subject do
+      Punchblock::Protocol::Ozone::Event::End.new do |end_event|
+        end_event.call_id = "3b7720bf-d5dc-4f4f-a837-d7338ec18b3a@10.0.1.11"
+        end_event << Punchblock::Protocol::Ozone::OzoneNode.new('redirect')
+      end
+    end
+
+    it { should be_a_valid_redirect_event }
+  end
+
+  describe "a reject event" do
+    subject do
+      Punchblock::Protocol::Ozone::Event::End.new do |end_event|
+        end_event.call_id = "3b7720bf-d5dc-4f4f-a837-d7338ec18b3a@10.0.1.11"
+        end_event << Punchblock::Protocol::Ozone::OzoneNode.new('reject')
+      end
+    end
+
+    it { should be_a_valid_reject_event }
   end
 end

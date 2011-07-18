@@ -78,3 +78,81 @@ RSpec::Matchers.define :be_a_valid_hangup_event do
     "be a valid hangup event"
   end
 end
+
+RSpec::Matchers.define :be_a_valid_ringing_event do
+  match_for_should do |event|
+    execution_expired? event
+    uuid_match? event.call_id, 'call_id'
+
+    unless event.is_a?(Punchblock::Protocol::Ozone::Event::Ringing)
+      @error = 'not an instance of Punchblock::Protocol::Ozone::Event::Ringing'
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
+
+    true unless @error
+  end
+
+  failure_message_for_should do |actual|
+    "The ring event was not valid: #{@error}"
+  end
+
+  description do
+    "be a valid ringing event"
+  end
+end
+
+RSpec::Matchers.define :be_a_valid_redirect_event do
+  match_for_should do |event|
+    execution_expired? event
+
+    unless event.is_a?(Punchblock::Protocol::Ozone::Event::End)
+      @error = 'not an instance of Punchblock::Protocol::Ozone::Event::End'
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
+
+    uuid_match? event.call_id, 'call_id'
+
+    unless event.reason == :redirect
+      @error = "got :#{event.reason.to_s} - expected :redirect"
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
+
+    true unless @error
+  end
+
+  failure_message_for_should do |actual|
+    "The reject event was not valid: #{@error}"
+  end
+
+  description do
+    "be a valid reject event"
+  end
+end
+
+RSpec::Matchers.define :be_a_valid_reject_event do
+  match_for_should do |event|
+    execution_expired? event
+
+    unless event.is_a?(Punchblock::Protocol::Ozone::Event::End)
+      @error = 'not an instance of Punchblock::Protocol::Ozone::Event::End'
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
+
+    uuid_match? event.call_id, 'call_id'
+
+    unless event.reason == :reject
+      @error = "got :#{event.reason.to_s} - expected :reject"
+      raise RSpec::Expectations::ExpectationNotMetError
+    end
+
+    true unless @error
+  end
+
+  failure_message_for_should do |actual|
+    "The reject event was not valid: #{@error}"
+  end
+
+  description do
+    "be a valid reject event"
+  end
+end

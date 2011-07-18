@@ -12,7 +12,7 @@ describe "Tropo2 Ask matchers" do
 
     describe "that's successful" do
       let(:reason) { Punchblock::Protocol::Ozone::Command::Ask::Complete::Success.new }
-      it { should be_a_valid_ask_event }
+      it { should be_a_valid_successful_ask_event }
     end
 
     describe "that stopped" do
