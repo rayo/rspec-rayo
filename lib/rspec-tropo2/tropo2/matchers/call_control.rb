@@ -30,16 +30,7 @@ end
 
 RSpec::Matchers.define :be_a_valid_answered_event do
   match_for_should do |event|
-    execution_expired? event
-
-    unless event.is_a?(Punchblock::Protocol::Ozone::Event::Answered)
-      @error = 'not an instance of Punchblock::Protocol::Ozone::Event::Answered'
-      raise RSpec::Expectations::ExpectationNotMetError
-    end
-
-    uuid_match? event.call_id, 'call_id'
-
-    true unless @error
+    basic_validation event, Punchblock::Protocol::Ozone::Event::Answered
   end
 
   failure_message_for_should do |actual|
@@ -53,21 +44,12 @@ end
 
 RSpec::Matchers.define :be_a_valid_hangup_event do
   match_for_should do |event|
-    execution_expired? event
-
-    unless event.is_a?(Punchblock::Protocol::Ozone::Event::End)
-      @error = 'not an instance of Punchblock::Protocol::Ozone::Event::End'
-      raise RSpec::Expectations::ExpectationNotMetError
+    basic_validation event, Punchblock::Protocol::Ozone::Event::End do
+      unless event.reason == :hangup
+        @error = "got #{event.reason.inspect} - expected :hangup"
+        raise RSpec::Expectations::ExpectationNotMetError
+      end
     end
-
-    uuid_match? event.call_id, 'call_id'
-
-    unless event.reason == :hangup
-      @error = "got #{event.reason.inspect} - expected :hangup"
-      raise RSpec::Expectations::ExpectationNotMetError
-    end
-
-    true unless @error
   end
 
   failure_message_for_should do |actual|
@@ -81,15 +63,7 @@ end
 
 RSpec::Matchers.define :be_a_valid_ringing_event do
   match_for_should do |event|
-    execution_expired? event
-    uuid_match? event.call_id, 'call_id'
-
-    unless event.is_a?(Punchblock::Protocol::Ozone::Event::Ringing)
-      @error = 'not an instance of Punchblock::Protocol::Ozone::Event::Ringing'
-      raise RSpec::Expectations::ExpectationNotMetError
-    end
-
-    true unless @error
+    basic_validation event, Punchblock::Protocol::Ozone::Event::Ringing
   end
 
   failure_message_for_should do |actual|
@@ -103,21 +77,12 @@ end
 
 RSpec::Matchers.define :be_a_valid_redirect_event do
   match_for_should do |event|
-    execution_expired? event
-
-    unless event.is_a?(Punchblock::Protocol::Ozone::Event::End)
-      @error = 'not an instance of Punchblock::Protocol::Ozone::Event::End'
-      raise RSpec::Expectations::ExpectationNotMetError
+    basic_validation event, Punchblock::Protocol::Ozone::Event::End do
+      unless event.reason == :redirect
+        @error = "got #{event.reason.inspect} - expected :redirect"
+        raise RSpec::Expectations::ExpectationNotMetError
+      end
     end
-
-    uuid_match? event.call_id, 'call_id'
-
-    unless event.reason == :redirect
-      @error = "got :#{event.reason.to_s} - expected :redirect"
-      raise RSpec::Expectations::ExpectationNotMetError
-    end
-
-    true unless @error
   end
 
   failure_message_for_should do |actual|
@@ -131,21 +96,12 @@ end
 
 RSpec::Matchers.define :be_a_valid_reject_event do
   match_for_should do |event|
-    execution_expired? event
-
-    unless event.is_a?(Punchblock::Protocol::Ozone::Event::End)
-      @error = 'not an instance of Punchblock::Protocol::Ozone::Event::End'
-      raise RSpec::Expectations::ExpectationNotMetError
+    basic_validation event, Punchblock::Protocol::Ozone::Event::End do
+      unless event.reason == :reject
+        @error = "got #{event.reason.inspect} - expected :reject"
+        raise RSpec::Expectations::ExpectationNotMetError
+      end
     end
-
-    uuid_match? event.call_id, 'call_id'
-
-    unless event.reason == :reject
-      @error = "got :#{event.reason.to_s} - expected :reject"
-      raise RSpec::Expectations::ExpectationNotMetError
-    end
-
-    true unless @error
   end
 
   failure_message_for_should do |actual|

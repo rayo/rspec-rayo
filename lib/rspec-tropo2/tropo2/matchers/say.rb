@@ -1,21 +1,8 @@
 RSpec::Matchers.define :be_a_valid_say_event do
   match_for_should do |event|
-    execution_expired? event
-
-    unless event.is_a?(Punchblock::Protocol::Ozone::Event::Complete)
-      @error = 'not an instance of Punchblock::Protocol::Ozone::Event::Complete '
-      raise RSpec::Expectations::ExpectationNotMetError
+    basic_validation event, Punchblock::Protocol::Ozone::Event::Complete, true do
+      match_type event.reason, Punchblock::Protocol::Ozone::Command::Say::Complete::Success
     end
-
-    uuid_match? event.call_id, 'call_id'
-    uuid_match? event.command_id, 'command_id'
-
-    unless event.reason.name == :success
-      @error = "expected :success for reason - got #{event.reason}"
-      raise RSpec::Expectations::ExpectationNotMetError
-    end
-
-    true unless @error
   end
 
   failure_message_for_should do |actual|
@@ -29,22 +16,9 @@ end
 
 RSpec::Matchers.define :be_a_valid_stopped_say_event do
   match_for_should do |event|
-    execution_expired? event
-
-    unless event.is_a?(Punchblock::Protocol::Ozone::Event::Complete)
-      @error = 'not an instance of Punchblock::Protocol::Ozone::Event::Complete '
-      raise RSpec::Expectations::ExpectationNotMetError
+    basic_validation event, Punchblock::Protocol::Ozone::Event::Complete, true do
+      match_type event.reason, Punchblock::Protocol::Ozone::Event::Complete::Stop
     end
-
-    uuid_match? event.call_id, 'call_id'
-    uuid_match? event.command_id, 'cmd_id'
-
-    unless event.reason.name == :stop
-      @error = "expected :stop for reason.name - got #{event.reason.name}"
-      raise RSpec::Expectations::ExpectationNotMetError
-    end
-
-    true unless @error
   end
 
   failure_message_for_should do |actual|
