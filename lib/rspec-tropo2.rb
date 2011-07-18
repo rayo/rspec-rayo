@@ -1,4 +1,3 @@
-$LOAD_PATH.unshift(File.dirname(__FILE__))
 %w{
   rspec-tropo2/tropo2-driver
   rspec-tropo2/tropo2-call
