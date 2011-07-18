@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe "Tropo2 Say matchers" do
-  describe "a transfer complete event" do
+  describe "a say complete event" do
     subject do
       Punchblock::Protocol::Ozone::Event::Complete.new.tap do |event|
         event.call_id = '5d6fe904-103d-4551-bd47-cf212c37b8c7'
