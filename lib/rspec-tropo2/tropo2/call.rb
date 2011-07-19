@@ -54,17 +54,17 @@ module Tropo2Utilities
       write @protocol.class::Command::Record.new(options)
     end
 
-    def last_event?(timeout = nil)
-      timeout = timeout || 2
-      true if next_event(timeout) == "execution expired"
+    def last_event?(timeout = 2)
+      begin
+        next_event timeout
+        false
+      rescue Timeout::Error
+        true
+      end
     end
 
     def next_event(timeout = nil)
-      begin
-        Timeout::timeout(timeout || @timeout) { @queue.pop }
-      rescue Timeout::Error => e
-        e.to_s
-      end
+      Timeout::timeout(timeout || @timeout) { @queue.pop }
     end
 
     private
