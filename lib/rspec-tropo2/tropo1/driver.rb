@@ -8,11 +8,15 @@ module Tropo2Utilities
 
     def initialize(uri = nil, latch_timeout = 5)
       @uri            = uri || "druby://0.0.0.0:8787"
-      @script_content = nil
-      @result         = nil
       @drb            = DRb.start_service @uri, self
-      @latches        = {}
       @latch_timeout  = latch_timeout
+      reset!
+    end
+
+    def reset!
+      @script_content = nil
+      @result = nil
+      @latches = {}
     end
 
     def trigger(latch_name)
