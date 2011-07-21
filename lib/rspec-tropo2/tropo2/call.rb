@@ -57,7 +57,6 @@ module Tropo2Utilities
     def last_event?(timeout = 2)
       begin
         next_event timeout
-        false
       rescue Timeout::Error
         true
       end
