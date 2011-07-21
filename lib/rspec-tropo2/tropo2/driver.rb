@@ -74,7 +74,8 @@ module Tropo2Utilities
                                                  :password          => options[:password],
                                                  :wire_logger       => @wire_logger,
                                                  :transport_logger  => @transport_logger,
-                                                 :auto_reconnect    => false
+                                                 :auto_reconnect    => false,
+                                                 :keep_alive        => false
       @event_queue = @tropo2.event_queue
 
       start_tropo2
