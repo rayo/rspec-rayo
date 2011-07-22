@@ -16,7 +16,7 @@ end
 
 def match_type(object, type)
   unless object.is_a?(type)
-    @error = "expected reason to be #{type}, got #{object.class}"
+    @error = "expected reason to be #{type}, got #{object}"
     raise RSpec::Expectations::ExpectationNotMetError
   end
 end
