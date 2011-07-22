@@ -33,7 +33,7 @@ module Tropo2Utilities
         event = nil
 
         until event == 'STOP' do
-          event = read_queue @event_queue
+          event = @event_queue.pop
           case event
           when Punchblock::Call
             queue = Queue.new
