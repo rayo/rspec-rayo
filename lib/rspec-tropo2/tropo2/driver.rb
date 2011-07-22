@@ -59,22 +59,18 @@ module Tropo2Utilities
     end
 
     def read_queue(queue)
-      begin
-        Timeout::timeout(@queue_timeout) { queue.pop }
-      rescue Timeout::Error => e
-        e.to_s
-      end
+      Timeout::timeout(@queue_timeout) { queue.pop }
     end
 
     def initialize_tropo2(options)
       initialize_logging options
 
       # Setup our Ozone environment
-      @tropo2  = Punchblock::Protocol::Ozone.new :username          => options[:username],
-                                                 :password          => options[:password],
-                                                 :wire_logger       => @wire_logger,
-                                                 :transport_logger  => @transport_logger,
-                                                 :auto_reconnect    => false
+      @tropo2 = Punchblock::Protocol::Ozone.new :username         => options[:username],
+                                                :password         => options[:password],
+                                                :wire_logger      => @wire_logger,
+                                                :transport_logger => @transport_logger,
+                                                :auto_reconnect   => false
       @event_queue = @tropo2.event_queue
 
       start_tropo2
