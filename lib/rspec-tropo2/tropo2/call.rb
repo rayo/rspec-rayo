@@ -70,6 +70,7 @@ module Tropo2Utilities
 
     def write(msg)
       @protocol.write @call_event, msg
+      msg
     end
   end
 end
