@@ -1,4 +1,4 @@
-module RayoUtilities
+module RSpecRayo
   class Call
     attr_accessor :call_event, :ring_event
     attr_reader :queue

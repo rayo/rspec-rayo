@@ -1,4 +1,4 @@
-module RayoUtilities
+module RSpecRayo
   class RayoDriver
     attr_reader :event_queue, :threads
     attr_accessor :calls

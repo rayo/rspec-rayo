@@ -12,14 +12,14 @@ Example Driver Setup
 --------------------
 
 	ap "Starting RayoDriver to manage events over XMPP."
-	@rayo = RayoUtilities::RayoDriver.new({ :username         => @config['rayo_server']['jid'],
+	@rayo = RSpecRayo::RayoDriver.new({ :username         => @config['rayo_server']['jid'],
 	                                              :password         => @config['rayo_server']['password'],
 	                                              :wire_logger      => Logger.new(@config['rayo_server']['wire_log']),
 	                                              :transport_logger => Logger.new(@config['rayo_server']['transport_log']) })
 	                                              #:log_level        => Logger::DEBUG })
                              
 	ap "Starting Tropo1Driver to host scripts via DRb and launch calls via HTTP."
-	@tropo1 = RayoUtilities::Tropo1Driver.new(@config['tropo1']['druby_uri'])
+	@tropo1 = RSpecRayo::Tropo1Driver.new(@config['tropo1']['druby_uri'])
 
 Custom Matchers
 ---------------
