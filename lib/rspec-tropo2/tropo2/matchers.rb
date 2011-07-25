@@ -39,6 +39,7 @@ end
   call_control
   conference
   dtmf
+  recording
   say
   transfer
 }.each { |matcher| require "rspec-tropo2/tropo2/matchers/#{matcher}" }
