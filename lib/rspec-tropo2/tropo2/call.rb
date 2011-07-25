@@ -18,15 +18,15 @@ module Tropo2Utilities
       write @protocol.class::Command::Answer.new
     end
 
-    def ask(options)
+    def ask(options = {})
       write @protocol.class::Command::Ask.new(options)
     end
 
-    def conference(options)
+    def conference(options = {})
       write @protocol.class::Command::Conference.new(options)
     end
 
-    def dial(options)
+    def dial(options = {})
       write @protocol.class::Command::Dial.new(options)
     end
 
@@ -34,7 +34,7 @@ module Tropo2Utilities
       write @protocol.class::Command::Hangup.new
     end
 
-    def redirect(options)
+    def redirect(options = {})
       write @protocol.class::Command::Redirect.new(options)
     end
 
@@ -42,15 +42,15 @@ module Tropo2Utilities
       write @protocol.class::Command::Reject.new(reason)
     end
 
-    def say(options)
+    def say(options = {})
       write @protocol.class::Command::Say.new(options)
     end
 
-    def transfer(options)
+    def transfer(options = {})
       write @protocol.class::Command::Transfer.new(options)
     end
 
-    def record(options)
+    def record(options = {})
       write @protocol.class::Command::Record.new(options)
     end
 
