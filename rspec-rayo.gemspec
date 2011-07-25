@@ -1,17 +1,17 @@
 # -*- encoding: utf-8 -*-
 $:.push File.expand_path("../lib", __FILE__)
-require "rspec-tropo2/version"
+require "rspec-rayo/version"
 
 Gem::Specification.new do |s|
-  s.name        = %q{rspec-tropo2}
-  s.version     = RSpecTropo2::VERSION
+  s.name        = %q{rspec-rayo}
+  s.version     = RSpecRayo::VERSION
   s.platform    = Gem::Platform::RUBY
   s.licenses    = ["MIT"]
-  s.authors     = ["Jason Goecke"]
-  s.email       = %q{jsgoecke@voxeo.com}
-  s.homepage    = %q{http://github.com/tropo/rspec-tropo2}
-  s.summary     = %q{Rspec2 for Tropo2}
-  s.description = %q{Rspec2 Matchers for Tropo2}
+  s.authors     = ["Jason Goecke", "Ben Langfeld"]
+  s.email       = %q{jsgoecke@voxeo.com, ben@langfeld.me}
+  s.homepage    = %q{http://github.com/tropo/rspec-rayo}
+  s.summary     = %q{Rspec2 for Rayo}
+  s.description = %q{Rspec2 Matchers for Rayo}
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")

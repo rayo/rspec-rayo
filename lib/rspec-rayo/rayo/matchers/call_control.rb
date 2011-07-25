@@ -30,7 +30,7 @@ end
 
 RSpec::Matchers.define :be_a_valid_answered_event do
   match_for_should do |event|
-    basic_validation event, Punchblock::Protocol::Ozone::Event::Answered
+    basic_validation event, Punchblock::Protocol::Rayo::Event::Answered
   end
 
   failure_message_for_should do |actual|
@@ -44,7 +44,7 @@ end
 
 RSpec::Matchers.define :be_a_valid_hangup_event do
   match_for_should do |event|
-    basic_validation event, Punchblock::Protocol::Ozone::Event::End do
+    basic_validation event, Punchblock::Protocol::Rayo::Event::End do
       unless event.reason == :hangup
         @error = "got #{event.reason.inspect} - expected :hangup"
         raise RSpec::Expectations::ExpectationNotMetError
@@ -63,7 +63,7 @@ end
 
 RSpec::Matchers.define :be_a_valid_ringing_event do
   match_for_should do |event|
-    basic_validation event, Punchblock::Protocol::Ozone::Event::Ringing
+    basic_validation event, Punchblock::Protocol::Rayo::Event::Ringing
   end
 
   failure_message_for_should do |actual|
@@ -77,7 +77,7 @@ end
 
 RSpec::Matchers.define :be_a_valid_redirect_event do
   match_for_should do |event|
-    basic_validation event, Punchblock::Protocol::Ozone::Event::End do
+    basic_validation event, Punchblock::Protocol::Rayo::Event::End do
       unless event.reason == :redirect
         @error = "got #{event.reason.inspect} - expected :redirect"
         raise RSpec::Expectations::ExpectationNotMetError
@@ -96,7 +96,7 @@ end
 
 RSpec::Matchers.define :be_a_valid_reject_event do
   match_for_should do |event|
-    basic_validation event, Punchblock::Protocol::Ozone::Event::End do
+    basic_validation event, Punchblock::Protocol::Rayo::Event::End do
       unless event.reason == :reject
         @error = "got #{event.reason.inspect} - expected :reject"
         raise RSpec::Expectations::ExpectationNotMetError

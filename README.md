@@ -1,25 +1,25 @@
-rspec-tropo2
+rspec-rayo
 ============
 
-This library extends the Rspec testing library for Tropo2 specific expectations. The library also provides classes for Tropo1 and Tropo2 drivers.
+This library extends the Rspec testing library for Rayo specific expectations. The library also provides classes for Tropo1 and Rayo drivers.
 
 Howto Install
 -------------
 
-	gem install rspec-tropo2
+	gem install rspec-rayo
 
 Example Driver Setup
 --------------------
 
-	ap "Starting Tropo2Driver to manage events over XMPP."
-	@tropo2 = Tropo2Utilities::Tropo2Driver.new({ :username         => @config['tropo2_server']['jid'],
-	                                              :password         => @config['tropo2_server']['password'],
-	                                              :wire_logger      => Logger.new(@config['tropo2_server']['wire_log']),
-	                                              :transport_logger => Logger.new(@config['tropo2_server']['transport_log']) })
+	ap "Starting RayoDriver to manage events over XMPP."
+	@rayo = RayoUtilities::RayoDriver.new({ :username         => @config['rayo_server']['jid'],
+	                                              :password         => @config['rayo_server']['password'],
+	                                              :wire_logger      => Logger.new(@config['rayo_server']['wire_log']),
+	                                              :transport_logger => Logger.new(@config['rayo_server']['transport_log']) })
 	                                              #:log_level        => Logger::DEBUG })
                              
 	ap "Starting Tropo1Driver to host scripts via DRb and launch calls via HTTP."
-	@tropo1 = Tropo2Utilities::Tropo1Driver.new(@config['tropo1']['druby_uri'])
+	@tropo1 = RayoUtilities::Tropo1Driver.new(@config['tropo1']['druby_uri'])
 
 Custom Matchers
 ---------------
