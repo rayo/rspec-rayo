@@ -1,7 +1,7 @@
 RSpec::Matchers.define :be_a_valid_transfer_event do
   match_for_should do |event|
     basic_validation event, Punchblock::Protocol::Rayo::Event::Complete, true do
-      match_type event.reason, Punchblock::Protocol::Rayo::Command::Transfer::Complete::Success
+      match_type event.reason, Punchblock::Protocol::Rayo::Command::Tropo::Transfer::Complete::Success
     end
   end
 
@@ -17,7 +17,7 @@ end
 RSpec::Matchers.define :be_a_valid_transfer_timeout_event do
   match_for_should do |event|
     basic_validation event, Punchblock::Protocol::Rayo::Event::Complete, true do
-      match_type event.reason, Punchblock::Protocol::Rayo::Command::Transfer::Complete::Timeout
+      match_type event.reason, Punchblock::Protocol::Rayo::Command::Tropo::Transfer::Complete::Timeout
     end
   end
 

@@ -11,7 +11,7 @@ describe "Rayo Ask matchers" do
     end
 
     describe "that's successful" do
-      let(:reason) { Punchblock::Protocol::Rayo::Command::Ask::Complete::Success.new }
+      let(:reason) { Punchblock::Protocol::Rayo::Command::Tropo::Ask::Complete::Success.new }
       it { should be_a_valid_successful_ask_event }
     end
 
@@ -21,12 +21,12 @@ describe "Rayo Ask matchers" do
     end
 
     describe "that got no input" do
-      let(:reason) { Punchblock::Protocol::Rayo::Command::Ask::Complete::NoInput.new }
+      let(:reason) { Punchblock::Protocol::Rayo::Command::Tropo::Ask::Complete::NoInput.new }
       it { should be_a_valid_noinput_event }
     end
 
     describe "that got no match" do
-      let(:reason) { Punchblock::Protocol::Rayo::Command::Ask::Complete::NoMatch.new }
+      let(:reason) { Punchblock::Protocol::Rayo::Command::Tropo::Ask::Complete::NoMatch.new }
       it { should be_a_valid_nomatch_event }
     end
   end

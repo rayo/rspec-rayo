@@ -11,12 +11,12 @@ describe "Rayo call control matchers" do
     end
 
     describe "that's successful" do
-      let(:reason) { Punchblock::Protocol::Rayo::Command::Transfer::Complete::Success.new }
+      let(:reason) { Punchblock::Protocol::Rayo::Command::Tropo::Transfer::Complete::Success.new }
       it { should be_a_valid_transfer_event }
     end
 
     describe "that timed out" do
-      let(:reason) { Punchblock::Protocol::Rayo::Command::Transfer::Complete::Timeout.new }
+      let(:reason) { Punchblock::Protocol::Rayo::Command::Tropo::Transfer::Complete::Timeout.new }
       it { should be_a_valid_transfer_timeout_event }
     end
   end

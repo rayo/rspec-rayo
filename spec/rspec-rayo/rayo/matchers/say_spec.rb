@@ -11,7 +11,7 @@ describe "Rayo Say matchers" do
     end
 
     describe "that's successful" do
-      let(:reason) { Punchblock::Protocol::Rayo::Command::Say::Complete::Success.new }
+      let(:reason) { Punchblock::Protocol::Rayo::Command::Tropo::Say::Complete::Success.new }
       it { should be_a_valid_say_event }
     end
 
