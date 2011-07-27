@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-describe "Tropo2 call control matchers" do
+describe "Rayo call control matchers" do
   describe "an answered event" do
     subject do
-      Punchblock::Protocol::Ozone::Event::Answered.new.tap do |answered_event|
+      Punchblock::Protocol::Rayo::Event::Answered.new.tap do |answered_event|
         answered_event.call_id = "3b7720bf-d5dc-4f4f-a837-d7338ec18b3a@10.0.1.11"
       end
     end
@@ -36,7 +36,7 @@ describe "Tropo2 call control matchers" do
 
   describe "an answered event" do
     subject do
-      Punchblock::Protocol::Ozone::Event::Answered.new do |event|
+      Punchblock::Protocol::Rayo::Event::Answered.new do |event|
         event.call_id = "3b7720bf-d5dc-4f4f-a837-d7338ec18b3a@10.0.1.11"
       end
     end
@@ -46,9 +46,9 @@ describe "Tropo2 call control matchers" do
 
   describe "a hangup event" do
     subject do
-      Punchblock::Protocol::Ozone::Event::End.new do |end_event|
+      Punchblock::Protocol::Rayo::Event::End.new do |end_event|
         end_event.call_id = "3b7720bf-d5dc-4f4f-a837-d7338ec18b3a@10.0.1.11"
-        end_event << Punchblock::Protocol::Ozone::OzoneNode.new('hangup')
+        end_event << Punchblock::Protocol::Rayo::RayoNode.new('hangup')
       end
     end
 
@@ -57,7 +57,7 @@ describe "Tropo2 call control matchers" do
 
   describe "a ringing event" do
     subject do
-      Punchblock::Protocol::Ozone::Event::Ringing.new do |event|
+      Punchblock::Protocol::Rayo::Event::Ringing.new do |event|
         event.call_id = "3b7720bf-d5dc-4f4f-a837-d7338ec18b3a@10.0.1.11"
       end
     end
@@ -67,10 +67,10 @@ describe "Tropo2 call control matchers" do
 
   describe "a complete hangup event" do
     subject do
-      Punchblock::Protocol::Ozone::Event::Complete.new.tap do |event|
+      Punchblock::Protocol::Rayo::Event::Complete.new.tap do |event|
         event.call_id = '5d6fe904-103d-4551-bd47-cf212c37b8c7'
         event.command_id = '6d5bf745-8fa9-4e78-be18-6e6a48393f13'
-        event << Punchblock::Protocol::Ozone::Event::Complete::Hangup.new
+        event << Punchblock::Protocol::Rayo::Event::Complete::Hangup.new
       end
     end
 
@@ -79,9 +79,9 @@ describe "Tropo2 call control matchers" do
 
   describe "a redirect event" do
     subject do
-      Punchblock::Protocol::Ozone::Event::End.new do |end_event|
+      Punchblock::Protocol::Rayo::Event::End.new do |end_event|
         end_event.call_id = "3b7720bf-d5dc-4f4f-a837-d7338ec18b3a@10.0.1.11"
-        end_event << Punchblock::Protocol::Ozone::OzoneNode.new('redirect')
+        end_event << Punchblock::Protocol::Rayo::RayoNode.new('redirect')
       end
     end
 
@@ -90,9 +90,9 @@ describe "Tropo2 call control matchers" do
 
   describe "a reject event" do
     subject do
-      Punchblock::Protocol::Ozone::Event::End.new do |end_event|
+      Punchblock::Protocol::Rayo::Event::End.new do |end_event|
         end_event.call_id = "3b7720bf-d5dc-4f4f-a837-d7338ec18b3a@10.0.1.11"
-        end_event << Punchblock::Protocol::Ozone::OzoneNode.new('reject')
+        end_event << Punchblock::Protocol::Rayo::RayoNode.new('reject')
       end
     end
 

@@ -1,4 +1,4 @@
-module Tropo2Utilities
+module RSpecRayo
   class Call
     attr_accessor :call_event, :ring_event
     attr_reader :queue
@@ -19,11 +19,11 @@ module Tropo2Utilities
     end
 
     def ask(options = {})
-      write @protocol.class::Command::Ask.new(options)
+      write @protocol.class::Command::Tropo::Ask.new(options)
     end
 
     def conference(options = {})
-      write @protocol.class::Command::Conference.new(options)
+      write @protocol.class::Command::Tropo::Conference.new(options)
     end
 
     def dial(options = {})
@@ -43,11 +43,11 @@ module Tropo2Utilities
     end
 
     def say(options = {})
-      write @protocol.class::Command::Say.new(options)
+      write @protocol.class::Command::Tropo::Say.new(options)
     end
 
     def transfer(options = {})
-      write @protocol.class::Command::Transfer.new(options)
+      write @protocol.class::Command::Tropo::Transfer.new(options)
     end
 
     def record(options = {})

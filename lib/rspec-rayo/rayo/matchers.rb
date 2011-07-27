@@ -42,12 +42,12 @@ end
   recording
   say
   transfer
-}.each { |matcher| require "rspec-tropo2/tropo2/matchers/#{matcher}" }
+}.each { |matcher| require "rspec-rayo/rayo/matchers/#{matcher}" }
 
 RSpec::Matchers.define :be_a_valid_complete_hangup_event do
   match_for_should do |event|
-    basic_validation event, Punchblock::Protocol::Ozone::Event::Complete, true do
-      match_type event.reason, Punchblock::Protocol::Ozone::Event::Complete::Hangup
+    basic_validation event, Punchblock::Protocol::Rayo::Event::Complete, true do
+      match_type event.reason, Punchblock::Protocol::Rayo::Event::Complete::Hangup
     end
   end
 

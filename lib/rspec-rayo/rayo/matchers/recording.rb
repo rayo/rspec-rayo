@@ -1,7 +1,7 @@
 RSpec::Matchers.define :be_a_valid_complete_recording_event do
   match_for_should do |event|
-    basic_validation event, Punchblock::Protocol::Ozone::Event::Complete, true do
-      match_type event.recording, Punchblock::Protocol::Ozone::Command::Record::Recording
+    basic_validation event, Punchblock::Protocol::Rayo::Event::Complete, true do
+      match_type event.recording, Punchblock::Protocol::Rayo::Command::Record::Recording
     end
   end
 

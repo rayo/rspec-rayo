@@ -1,6 +1,6 @@
 RSpec::Matchers.define :be_a_valid_dtmf_event do
   match_for_should do |event|
-    basic_validation event, Punchblock::Protocol::Ozone::Event::DTMF
+    basic_validation event, Punchblock::Protocol::Rayo::Event::DTMF
   end
 
   failure_message_for_should do |actual|

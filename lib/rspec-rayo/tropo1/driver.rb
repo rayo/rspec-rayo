@@ -1,4 +1,4 @@
-module Tropo2Utilities
+module RSpecRayo
   class Tropo1Driver
     require 'net/http'
     require 'uri'
