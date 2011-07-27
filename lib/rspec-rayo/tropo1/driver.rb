@@ -4,12 +4,13 @@ module RSpecRayo
     require 'uri'
     require 'countdownlatch'
 
-    attr_accessor :script_content, :result, :drb
+    attr_accessor :script_content, :result, :drb, :config
 
     def initialize(uri = nil, latch_timeout = 5)
       @uri            = uri || "druby://0.0.0.0:8787"
       @drb            = DRb.start_service @uri, self
       @latch_timeout  = latch_timeout
+      @config         = {}
       reset!
     end
 
