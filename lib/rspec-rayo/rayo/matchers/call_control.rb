@@ -90,7 +90,7 @@ RSpec::Matchers.define :be_a_valid_redirect_event do
   end
 
   description do
-    "be a valid reject event"
+    "be a valid redirect event"
   end
 end
 
