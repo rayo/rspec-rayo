@@ -54,6 +54,14 @@ module RSpecRayo
       write @protocol.class::Command::Record.new(options)
     end
 
+    def output(options = {})
+      write @protocol.class::Command::Output.new(options)
+    end
+
+    def input(options = {})
+      write @protocol.class::Command::Input.new(options)
+    end
+
     def last_event?(timeout = 2)
       begin
         next_event timeout

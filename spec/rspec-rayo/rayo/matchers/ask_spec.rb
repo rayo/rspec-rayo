@@ -22,12 +22,12 @@ describe "Rayo Ask matchers" do
 
     describe "that got no input" do
       let(:reason) { Punchblock::Protocol::Rayo::Command::Tropo::Ask::Complete::NoInput.new }
-      it { should be_a_valid_noinput_event }
+      it { should be_a_valid_ask_noinput_event }
     end
 
     describe "that got no match" do
       let(:reason) { Punchblock::Protocol::Rayo::Command::Tropo::Ask::Complete::NoMatch.new }
-      it { should be_a_valid_nomatch_event }
+      it { should be_a_valid_ask_nomatch_event }
     end
   end
 end

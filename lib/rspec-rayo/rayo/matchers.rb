@@ -39,6 +39,8 @@ end
   call_control
   conference
   dtmf
+  input
+  output
   recording
   say
   transfer

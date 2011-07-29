@@ -67,10 +67,10 @@ module RSpecRayo
 
       # Setup our Rayo environment
       @rayo = Punchblock::Protocol::Rayo.new :username         => options[:username],
-                                                :password         => options[:password],
-                                                :wire_logger      => @wire_logger,
-                                                :transport_logger => @transport_logger,
-                                                :auto_reconnect   => false
+                                             :password         => options[:password],
+                                             :wire_logger      => @wire_logger,
+                                             :transport_logger => @transport_logger,
+                                             :auto_reconnect   => false
       @event_queue = @rayo.event_queue
 
       start_rayo
