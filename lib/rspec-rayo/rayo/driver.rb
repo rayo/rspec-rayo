@@ -17,6 +17,13 @@ module RSpecRayo
       read_queue @call_queue
     end
 
+    def cleanup_calls
+      @calls.each_pair do |call_id, call|
+        call.hangup unless call.status == :finished
+      end
+      @calls = {}
+    end
+
     def dial(options)
       call = Call.new :protocol   => @rayo,
                       :queue      => Queue.new,
