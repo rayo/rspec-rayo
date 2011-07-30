@@ -55,6 +55,9 @@ module RSpecRayo
           else
             # Temp based on this nil returned on conference: https://github.com/tropo/punchblock/issues/27
             begin
+              if event.is_a?(Punchblock::Protocol::Rayo::Event::End)
+                @calls[event.call_id].status = :finished
+              end
               @calls[event.call_id].queue.push event unless event.nil?
             rescue => error
               # Event nil issue to be addressed here: https://github.com/tropo/rspec-rayo/issues/2
