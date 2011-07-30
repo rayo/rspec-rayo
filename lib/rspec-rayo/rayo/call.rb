@@ -1,17 +1,20 @@
 module RSpecRayo
   class Call
     attr_accessor :call_event, :ring_event
-    attr_reader :queue
+    attr_reader :queue, :status
 
     def initialize(options)
       @call_event = options[:call_event]
       @protocol   = options[:protocol]
       @queue      = options[:queue]
       @timeout    = options[:timeout] || 5
+      @status     = :offered
     end
 
     def accept
-      write @protocol.class::Command::Accept.new
+      write(@protocol.class::Command::Accept.new).tap do |response|
+        @status = :accepted if response
+      end
     end
 
     def answer
@@ -31,7 +34,9 @@ module RSpecRayo
     end
 
     def hangup
-      write @protocol.class::Command::Hangup.new
+      write(@protocol.class::Command::Hangup.new).tap do |response|
+        @status = :finished if response
+      end
     end
 
     def redirect(options = {})
@@ -39,7 +44,9 @@ module RSpecRayo
     end
 
     def reject(reason = nil)
-      write @protocol.class::Command::Reject.new(reason)
+      write(@protocol.class::Command::Reject.new(reason)).tap do |response|
+        @status = :finished if response
+      end
     end
 
     def say(options = {})
@@ -77,8 +84,8 @@ module RSpecRayo
     private
 
     def write(msg)
-      @protocol.write @call_event, msg
-      msg
+      response = @protocol.write @call_event, msg
+      msg if response
     end
   end
 end
