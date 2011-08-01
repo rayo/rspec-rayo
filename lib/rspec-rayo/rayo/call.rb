@@ -84,7 +84,7 @@ module RSpecRayo
     private
 
     def write(msg)
-      response = @protocol.write @call_event, msg
+      response = @protocol.write @call_event.call_id, msg
       msg if response
     end
   end
