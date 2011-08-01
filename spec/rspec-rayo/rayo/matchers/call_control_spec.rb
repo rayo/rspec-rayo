@@ -18,10 +18,14 @@ describe "Rayo call control matchers" do
     end
 
     subject do
-      Punchblock::Call.new("8df3437f-285f-406e-9ba2-9d14af1b72c4@10.0.1.11", "sip:usera@10.0.1.11", headers)
+      Punchblock::Protocol::Rayo::Event::Offer.new.tap do |offer|
+        offer.call_id = "8df3437f-285f-406e-9ba2-9d14af1b72c4"
+        offer.to = "sip:usera@10.0.1.11"
+        offer.headers = headers
+      end
     end
 
-    it { should be_a_valid_call_event }
+    it { should be_a_valid_offer_event }
   end
 
   describe "an answered event" do

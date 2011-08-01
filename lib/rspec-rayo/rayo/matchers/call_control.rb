@@ -1,30 +1,21 @@
-RSpec::Matchers.define :be_a_valid_call_event do
+RSpec::Matchers.define :be_a_valid_offer_event do
   match_for_should do |event|
-    execution_expired? event
-
-    uuid_match? event.call_id, 'call_id'
-
-    if event.to.nil?
-      @error = 'to is nil - expected a value'
-      raise RSpec::Expectations::ExpectationNotMetError
-    end
-
-    event.headers.each do |k,v|
-      if v.nil?
-        @error = "#{k.to_s} is nil - expected a value"
-        raise RSpec::Expectations::ExpectationNotMetError
+    basic_validation event, Punchblock::Protocol::Rayo::Event::Offer do
+      event.headers_hash.each do |k,v|
+        if v.nil?
+          @error = "#{k.to_s} is nil - expected a value"
+          raise RSpec::Expectations::ExpectationNotMetError
+        end
       end
     end
-
-    true unless @error
   end
 
   failure_message_for_should do |actual|
-    "The call event was not valid: #{@error}"
+    "The offer event was not valid: #{@error}"
   end
 
   description do
-    "be a valid call event"
+    "be a valid offer event"
   end
 end
 
