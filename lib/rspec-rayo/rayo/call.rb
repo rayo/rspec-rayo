@@ -5,6 +5,7 @@ module RSpecRayo
 
     def initialize(options)
       @call_event = options[:call_event]
+      @call_id    = @call_event.call_id if @call_event
       @protocol   = options[:protocol]
       @queue      = options[:queue]
       @timeout    = options[:timeout] || 5
@@ -84,7 +85,7 @@ module RSpecRayo
     private
 
     def write(msg)
-      response = @protocol.write @call_event.call_id, msg
+      response = @protocol.write @call_id, msg
       msg if response
     end
   end
