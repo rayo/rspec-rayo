@@ -30,7 +30,9 @@ module RSpecRayo
                       :timeout    => @queue_timeout
       call.dial options
       call.ring_event = read_queue @ring_event_queue
-      call.call_event = Punchblock::Call.new call.ring_event.call_id, nil, 'x-rayo-origin' => 'rspec-rayo'
+      call.call_event = Punchblock::Protocol::Rayo::Event::Offer.new
+      call.call_event.call_id = call.ring_event.call_id
+      call.headers = { 'x-rayo-origin' => 'rspec-rayo' }
       @calls.merge! call.call_event.call_id => call
       call
     end
@@ -42,11 +44,10 @@ module RSpecRayo
         until event == 'STOP' do
           event = @event_queue.pop
           case event
-          when Punchblock::Call
-            queue = Queue.new
+          when Punchblock::Protocol::Rayo::Event::Offer
             call = Call.new :call_event => event,
                             :protocol   => @rayo,
-                            :queue      => queue,
+                            :queue      => Queue.new,
                             :timeout    => @queue_timeout
             @calls.merge! event.call_id => call
             @call_queue.push call
