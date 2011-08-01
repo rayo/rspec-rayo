@@ -32,7 +32,7 @@ module RSpecRayo
       call.ring_event = read_queue @ring_event_queue
       call.call_event = Punchblock::Protocol::Rayo::Event::Offer.new
       call.call_event.call_id = call.ring_event.call_id
-      call.headers = { 'x-rayo-origin' => 'rspec-rayo' }
+      call.call_event.headers = { 'x-rayo-origin' => 'rspec-rayo' }
       @calls.merge! call.call_event.call_id => call
       call
     end
