@@ -112,3 +112,17 @@ RSpec::Matchers.define :be_a_valid_reject_event do
     "be a valid reject event"
   end
 end
+
+RSpec::Matchers.define :be_a_valid_complete_error_event do
+  match_for_should do |event|
+    basic_validation event, Punchblock::Protocol::Rayo::Event::Complete::Error
+  end
+
+  failure_message_for_should do |actual|
+    "The complete error event was not valid: #{@error}"
+  end
+
+  description do
+    "be a valid complete error event"
+  end
+end
