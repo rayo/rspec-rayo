@@ -70,6 +70,14 @@ module RSpecRayo
       write @protocol.class::Command::Input.new(options)
     end
 
+    def join(options = {})
+      write @protocol.class::Command::Join.new(options)
+    end
+
+    def unjoin(options = {})
+      write @protocol.class::Command::Unjoin.new(options)
+    end
+
     def last_event?(timeout = 2)
       begin
         next_event timeout
