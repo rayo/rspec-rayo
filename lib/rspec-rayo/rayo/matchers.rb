@@ -40,6 +40,7 @@ end
   conference
   dtmf
   input
+  join
   output
   recording
   say
