@@ -1,7 +1,7 @@
 module RSpecRayo
   class Call
-    attr_accessor :call_event, :ring_event, :status
-    attr_reader :queue, :call_id
+    attr_accessor :call_event, :ring_event, :status, :call_id
+    attr_reader :queue
 
     def initialize(options)
       @call_event = options[:call_event]
