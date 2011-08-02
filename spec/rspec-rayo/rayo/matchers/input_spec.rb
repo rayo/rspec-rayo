@@ -11,8 +11,18 @@ describe "Rayo Input matchers" do
     end
 
     describe "that's successful" do
-      let(:reason) { Punchblock::Protocol::Rayo::Command::Input::Complete::Success.new }
+      let :reason do
+        Punchblock::Protocol::Rayo::Command::Input::Complete::Success.new.tap do |success|
+          success << '<utterance>blah</utterance>'
+          success << '<interpretation>blah</interpretation>'
+        end
+      end
+
       it { should be_a_valid_successful_input_event }
+      it { should be_a_valid_successful_input_event.with_utterance('blah') }
+      it { should_not be_a_valid_successful_input_event.with_utterance('woo') }
+      it { should be_a_valid_successful_input_event.with_interpretation('blah') }
+      it { should_not be_a_valid_successful_input_event.with_interpretation('woo') }
     end
 
     describe "that stopped" do
