@@ -42,7 +42,6 @@ module RSpecRayo
       latch = @latches[latch_name]
       raise RuntimeError, "No latch by that name" unless latch
       latch.wait @latch_timeout
-      end
     end
 
     def place_call(session_url)
