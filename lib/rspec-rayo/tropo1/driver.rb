@@ -29,18 +29,19 @@ module RSpecRayo
     end
 
     def trigger(latch_name)
-      @latches[latch_name].tap do |latch|
-        latch.countdown! if latch
-      end
+      latch = @latches[latch_name]
+      raise RuntimeError, "No latch by that name" unless latch
+      latch.countdown!
     end
 
     def add_latch(latch_name, count = 1)
-      @latches[latch_name] ||= CountDownLatch.new count
+      @latches[latch_name] = CountDownLatch.new count
     end
 
     def wait(latch_name)
-      @latches[latch_name].tap do |latch|
-        latch.wait @latch_timeout if latch
+      latch = @latches[latch_name]
+      raise RuntimeError, "No latch by that name" unless latch
+      latch.wait @latch_timeout
       end
     end
 
