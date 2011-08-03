@@ -11,7 +11,6 @@ module RSpecRayo
       @uri            = uri || "druby://0.0.0.0:8787"
       @latch_timeout  = latch_timeout
       @config         = {}
-      start_drb
       reset!
     end
 
