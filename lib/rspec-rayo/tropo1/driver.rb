@@ -1,5 +1,6 @@
 module RSpecRayo
   class Tropo1Driver
+    require 'drb'
     require 'net/http'
     require 'uri'
     require 'countdownlatch'
@@ -8,10 +9,18 @@ module RSpecRayo
 
     def initialize(uri = nil, latch_timeout = 5)
       @uri            = uri || "druby://0.0.0.0:8787"
-      @drb            = DRb.start_service @uri, self
       @latch_timeout  = latch_timeout
       @config         = {}
+      start_drb
       reset!
+    end
+
+    def start_drb
+      @drb = DRb.start_service @uri, self
+    end
+
+    def stop_drb
+      @drb.stop_service
     end
 
     def reset!
