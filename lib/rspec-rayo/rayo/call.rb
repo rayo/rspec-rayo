@@ -78,6 +78,14 @@ module RSpecRayo
       write @protocol.class::Command::Unjoin.new(options)
     end
 
+    def mute
+      write @protocol.class::Command::Mute.new
+    end
+
+    def unmute
+      write @protocol.class::Command::Unmute.new
+    end
+
     def last_event?(timeout = 2)
       begin
         next_event timeout
