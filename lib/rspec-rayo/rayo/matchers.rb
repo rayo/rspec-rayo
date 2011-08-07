@@ -49,8 +49,8 @@ end
 
 RSpec::Matchers.define :be_a_valid_complete_hangup_event do
   match_for_should do |event|
-    basic_validation event, Punchblock::Protocol::Rayo::Event::Complete, true do
-      match_type event.reason, Punchblock::Protocol::Rayo::Event::Complete::Hangup
+    basic_validation event, Punchblock::Rayo::Event::Complete, true do
+      match_type event.reason, Punchblock::Rayo::Event::Complete::Hangup
     end
   end
 
@@ -69,8 +69,8 @@ RSpec::Matchers.define :be_a_valid_complete_error_event do
   end
 
   match_for_should do |event|
-    basic_validation event, Punchblock::Protocol::Rayo::Event::Complete, true do
-      match_type event.reason, Punchblock::Protocol::Rayo::Event::Complete::Error
+    basic_validation event, Punchblock::Rayo::Event::Complete, true do
+      match_type event.reason, Punchblock::Rayo::Event::Complete::Error
       @error = "The error message was not correct. Expected '#{@message}', got '#{event.reason.details}'" if @message && event.reason.details != @message
     end
   end

@@ -25,12 +25,12 @@ module RSpecRayo
     end
 
     def dial(options)
-      call = Call.new :protocol   => @rayo,
-                      :queue      => Queue.new,
-                      :timeout    => @queue_timeout
+      call = Call.new :protocol => @rayo,
+                      :queue    => Queue.new,
+                      :timeout  => @queue_timeout
       call.dial options
       call.ring_event = read_queue @ring_event_queue
-      call.call_event = Punchblock::Protocol::Rayo::Event::Offer.new
+      call.call_event = Punchblock::Rayo::Event::Offer.new
       call.call_event.call_id = call.ring_event.call_id
       call.call_id = call.ring_event.call_id
       call.call_event.headers = { 'x-rayo-origin' => 'rspec-rayo' }
@@ -45,19 +45,19 @@ module RSpecRayo
         until event == 'STOP' do
           event = @event_queue.pop
           case event
-          when Punchblock::Protocol::Rayo::Event::Offer
+          when Punchblock::Rayo::Event::Offer
             call = Call.new :call_event => event,
                             :protocol   => @rayo,
                             :queue      => Queue.new,
                             :timeout    => @queue_timeout
             @calls.merge! event.call_id => call
             @call_queue.push call
-          when Punchblock::Protocol::Rayo::Event::Ringing
+          when Punchblock::Rayo::Event::Ringing
             @ring_event_queue.push event
           else
             # Temp based on this nil returned on conference: https://github.com/tropo/punchblock/issues/27
             begin
-              if event.is_a?(Punchblock::Protocol::Rayo::Event::End)
+              if event.is_a?(Punchblock::Rayo::Event::End)
                 @calls[event.call_id].status = :finished
               end
               @calls[event.call_id].queue.push event unless event.nil?
@@ -78,11 +78,11 @@ module RSpecRayo
       initialize_logging options
 
       # Setup our Rayo environment
-      @rayo = Punchblock::Protocol::Rayo.new :username         => options[:username],
-                                             :password         => options[:password],
-                                             :wire_logger      => @wire_logger,
-                                             :transport_logger => @transport_logger,
-                                             :auto_reconnect   => false
+      @rayo = Punchblock::Rayo.new :username         => options[:username],
+                                   :password         => options[:password],
+                                   :wire_logger      => @wire_logger,
+                                   :transport_logger => @transport_logger,
+                                   :auto_reconnect   => false
       @event_queue = @rayo.event_queue
 
       start_rayo
