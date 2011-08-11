@@ -82,7 +82,8 @@ module RSpecRayo
                                    :password         => options[:password],
                                    :wire_logger      => @wire_logger,
                                    :transport_logger => @transport_logger,
-                                   :auto_reconnect   => false
+                                   :auto_reconnect   => false,
+                                   :write_timeout    => options[:write_timeout]
       @event_queue = @rayo.event_queue
 
       start_rayo
