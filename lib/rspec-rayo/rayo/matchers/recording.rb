@@ -1,7 +1,7 @@
 RSpec::Matchers.define :be_a_valid_complete_recording_event do
   match_for_should do |event|
     basic_validation event, Punchblock::Rayo::Event::Complete, true do
-      match_type event.recording, Punchblock::Rayo::Command::Record::Recording
+      match_type event.recording, Punchblock::Rayo::Component::Record::Recording
     end
   end
 
@@ -18,7 +18,7 @@ RSpec::Matchers.define :be_a_valid_stopped_recording_event do
   match_for_should do |event|
     basic_validation event, Punchblock::Rayo::Event::Complete, true do
       match_type event.reason, Punchblock::Rayo::Event::Complete::Stop
-      match_type event.recording, Punchblock::Rayo::Command::Record::Recording
+      match_type event.recording, Punchblock::Rayo::Component::Record::Recording
     end
   end
 

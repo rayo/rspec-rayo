@@ -21,13 +21,13 @@ def match_type(object, type)
   end
 end
 
-def basic_validation(object, klass, validate_command_id = false)
+def basic_validation(object, klass, validate_component_id = false)
   execution_expired? object
 
   match_type object, klass
 
   uuid_match? object.call_id, 'call_id'
-  uuid_match? object.command_id, 'cmd_id' if validate_command_id
+  uuid_match? object.component_id, 'cmd_id' if validate_component_id
 
   yield if block_given?
 

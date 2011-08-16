@@ -9,7 +9,7 @@ RSpec::Matchers.define :be_a_valid_successful_input_event do
 
   match_for_should do |event|
     basic_validation event, Punchblock::Rayo::Event::Complete, true do
-      match_type event.reason, Punchblock::Rayo::Command::Input::Complete::Success
+      match_type event.reason, Punchblock::Rayo::Component::Input::Complete::Success
       @error = "The utterance was not correct. Expected '#{@utterance}', got '#{event.reason.utterance}'" if @utterance && event.reason.utterance != @utterance
       @error = "The interpretation was not correct. Expected '#{@interpretation}', got '#{event.reason.interpretation}'" if @interpretation && event.reason.interpretation != @interpretation
     end
@@ -46,7 +46,7 @@ end
 RSpec::Matchers.define :be_a_valid_input_noinput_event do
   match_for_should do |event|
     basic_validation event, Punchblock::Rayo::Event::Complete, true do
-      match_type event.reason, Punchblock::Rayo::Command::Input::Complete::NoInput
+      match_type event.reason, Punchblock::Rayo::Component::Input::Complete::NoInput
     end
   end
 
@@ -62,7 +62,7 @@ end
 RSpec::Matchers.define :be_a_valid_input_nomatch_event do
   match_for_should do |event|
     basic_validation event, Punchblock::Rayo::Event::Complete, true do
-      match_type event.reason, Punchblock::Rayo::Command::Input::Complete::NoMatch
+      match_type event.reason, Punchblock::Rayo::Component::Input::Complete::NoMatch
     end
   end
 

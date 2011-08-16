@@ -9,7 +9,7 @@ RSpec::Matchers.define :be_a_valid_successful_ask_event do
 
   match_for_should do |event|
     basic_validation event, Punchblock::Rayo::Event::Complete, true do
-      match_type event.reason, Punchblock::Rayo::Command::Tropo::Ask::Complete::Success
+      match_type event.reason, Punchblock::Rayo::Component::Tropo::Ask::Complete::Success
       @error = "The utterance was not correct. Expected '#{@utterance}', got '#{event.reason.utterance}'" if @utterance && event.reason.utterance != @utterance
       @error = "The interpretation was not correct. Expected '#{@interpretation}', got '#{event.reason.interpretation}'" if @interpretation && event.reason.interpretation != @interpretation
     end
@@ -46,7 +46,7 @@ end
 RSpec::Matchers.define :be_a_valid_ask_noinput_event do
   match_for_should do |event|
     basic_validation event, Punchblock::Rayo::Event::Complete, true do
-      match_type event.reason, Punchblock::Rayo::Command::Tropo::Ask::Complete::NoInput
+      match_type event.reason, Punchblock::Rayo::Component::Tropo::Ask::Complete::NoInput
     end
   end
 
@@ -62,7 +62,7 @@ end
 RSpec::Matchers.define :be_a_valid_ask_nomatch_event do
   match_for_should do |event|
     basic_validation event, Punchblock::Rayo::Event::Complete, true do
-      match_type event.reason, Punchblock::Rayo::Command::Tropo::Ask::Complete::NoMatch
+      match_type event.reason, Punchblock::Rayo::Component::Tropo::Ask::Complete::NoMatch
     end
   end
 

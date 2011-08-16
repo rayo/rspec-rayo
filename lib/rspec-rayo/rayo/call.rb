@@ -23,11 +23,11 @@ module RSpecRayo
     end
 
     def ask(options = {})
-      write @protocol.class::Command::Tropo::Ask.new(options)
+      write @protocol.class::Component::Tropo::Ask.new(options)
     end
 
     def conference(options = {})
-      write @protocol.class::Command::Tropo::Conference.new(options)
+      write @protocol.class::Component::Tropo::Conference.new(options)
     end
 
     def dial(options = {})
@@ -51,23 +51,23 @@ module RSpecRayo
     end
 
     def say(options = {})
-      write @protocol.class::Command::Tropo::Say.new(options)
+      write @protocol.class::Component::Tropo::Say.new(options)
     end
 
     def transfer(options = {})
-      write @protocol.class::Command::Tropo::Transfer.new(options)
+      write @protocol.class::Component::Tropo::Transfer.new(options)
     end
 
     def record(options = {})
-      write @protocol.class::Command::Record.new(options)
+      write @protocol.class::Component::Record.new(options)
     end
 
     def output(options = {})
-      write @protocol.class::Command::Output.new(options)
+      write @protocol.class::Component::Output.new(options)
     end
 
     def input(options = {})
-      write @protocol.class::Command::Input.new(options)
+      write @protocol.class::Component::Input.new(options)
     end
 
     def join(options = {})

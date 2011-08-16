@@ -1,7 +1,7 @@
 RSpec::Matchers.define :be_a_valid_output_event do
   match_for_should do |event|
     basic_validation event, Punchblock::Rayo::Event::Complete, true do
-      match_type event.reason, Punchblock::Rayo::Command::Output::Complete::Success
+      match_type event.reason, Punchblock::Rayo::Component::Output::Complete::Success
     end
   end
 
