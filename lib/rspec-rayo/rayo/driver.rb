@@ -41,16 +41,12 @@ module RSpecRayo
           event = @event_queue.pop
           case event
           when Punchblock::Rayo::Event::Offer
-            if call = @calls[event.call_id]
-              call.call_event = event
-            else
-              call = Call.new :call_event => event,
-                              :protocol   => @rayo,
-                              :queue      => Queue.new,
-                              :timeout    => @queue_timeout
-              @calls.merge! event.call_id => call
-              @call_queue.push call
-            end
+            call = Call.new :call_event => event,
+                            :protocol   => @rayo,
+                            :queue      => Queue.new,
+                            :timeout    => @queue_timeout
+            @calls.merge! event.call_id => call
+            @call_queue.push call
           when Punchblock::Rayo::Event::Ringing
             @ring_event_queue.push event
           else
