@@ -31,7 +31,7 @@ def basic_validation(object, klass, validate_component_id = false)
 
   yield if block_given?
 
-  true unless @error
+  object unless @error
 end
 
 %w{
