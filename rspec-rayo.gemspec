@@ -19,7 +19,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
 
   s.add_dependency %q<rspec>, [">= 2.6.0"]
-  s.add_dependency %q<punchblock>, [">= 0.1.0"]
+  s.add_dependency %q<punchblock>, [">= 0.2.0"]
   s.add_dependency %q<countdownlatch>, [">= 1.0.0"]
 
   s.add_development_dependency %q<yard>, ["~> 0.6.0"]
