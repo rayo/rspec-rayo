@@ -6,13 +6,13 @@ module RSpecRayo
     attr_reader :queue
 
     def initialize(options)
-      @call_event = FutureResource.new
-      call_event  = options[:call_event] if options[:call_event]
-      @ring_event = FutureResource.new
-      @protocol   = options[:protocol]
-      @queue      = options[:queue]
-      @timeout    = options[:timeout] || 5
-      @status     = :offered
+      @call_event     = FutureResource.new
+      self.call_event = options[:call_event] if options[:call_event]
+      @ring_event     = FutureResource.new
+      @protocol       = options[:protocol]
+      @queue          = options[:queue]
+      @timeout        = options[:timeout] || 5
+      @status         = :offered
     end
 
     def accept
