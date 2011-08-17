@@ -6,7 +6,6 @@ module RSpecRayo
     def initialize(options)
       @calls            = {}
       @call_queue       = Queue.new
-      @ring_event_queue = Queue.new
       @queue_timeout    = options[:queue_timeout] || 5
       @threads          = []
 
@@ -29,7 +28,6 @@ module RSpecRayo
         dial = call.dial options
         call.call_id = dial.component_id
         @calls.merge! call.call_id => call
-        call.ring_event = read_queue @ring_event_queue
       end
     end
 
@@ -48,7 +46,8 @@ module RSpecRayo
             @calls.merge! event.call_id => call
             @call_queue.push call
           when Punchblock::Rayo::Event::Ringing
-            @ring_event_queue.push event
+            call = @calls[event.call_id]
+            call.ring_event = event if call
           else
             # Temp based on this nil returned on conference: https://github.com/tropo/punchblock/issues/27
             begin
