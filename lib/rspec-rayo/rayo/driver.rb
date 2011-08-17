@@ -26,7 +26,7 @@ module RSpecRayo
     def dial(options)
       Call.new(:protocol => @rayo, :queue => Queue.new, :timeout => @queue_timeout).tap do |call|
         dial = call.dial options
-        call.call_id = dial.component_id
+        call.call_id = dial.call_id
         @calls.merge! call.call_id => call
       end
     end

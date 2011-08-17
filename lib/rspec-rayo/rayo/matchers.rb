@@ -47,6 +47,25 @@ end
   transfer
 }.each { |matcher| require "rspec-rayo/rayo/matchers/#{matcher}" }
 
+RSpec::Matchers.define :have_executed_correctly do
+  match_for_should do |command|
+    basic_validation command, Punchblock::Rayo::CommandNode do
+      unless command.executing?
+        @error = "expected status to be #{:executing.inspect}, got #{command.state_name}"
+        raise RSpec::Expectations::ExpectationNotMetError
+      end
+    end
+  end
+
+  failure_message_for_should do |actual|
+    "The command failed to execute: #{@error}"
+  end
+
+  description do
+    "execute correctly"
+  end
+end
+
 RSpec::Matchers.define :be_a_valid_complete_hangup_event do
   match_for_should do |event|
     basic_validation event, Punchblock::Rayo::Event::Complete, true do
