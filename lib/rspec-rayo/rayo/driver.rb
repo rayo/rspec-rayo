@@ -25,17 +25,12 @@ module RSpecRayo
     end
 
     def dial(options)
-      call = Call.new :protocol => @rayo,
-                      :queue    => Queue.new,
-                      :timeout  => @queue_timeout
-      call.dial options
-      call.ring_event = read_queue @ring_event_queue
-      call.call_event = Punchblock::Rayo::Event::Offer.new
-      call.call_event.call_id = call.ring_event.call_id
-      call.call_id = call.ring_event.call_id
-      call.call_event.headers = { 'x-rayo-origin' => 'rspec-rayo' }
-      @calls.merge! call.call_event.call_id => call
-      call
+      Call.new(:protocol => @rayo, :queue => Queue.new, :timeout => @queue_timeout).tap do |call|
+        dial = call.dial options
+        call.call_id = dial.component_id
+        @calls.merge! call.call_id => call
+        call.ring_event = read_queue @ring_event_queue
+      end
     end
 
     def start_event_dispatcher
@@ -46,12 +41,16 @@ module RSpecRayo
           event = @event_queue.pop
           case event
           when Punchblock::Rayo::Event::Offer
-            call = Call.new :call_event => event,
-                            :protocol   => @rayo,
-                            :queue      => Queue.new,
-                            :timeout    => @queue_timeout
-            @calls.merge! event.call_id => call
-            @call_queue.push call
+            if call = @calls[event.call_id]
+              call.call_event = event
+            else
+              call = Call.new :call_event => event,
+                              :protocol   => @rayo,
+                              :queue      => Queue.new,
+                              :timeout    => @queue_timeout
+              @calls.merge! event.call_id => call
+              @call_queue.push call
+            end
           when Punchblock::Rayo::Event::Ringing
             @ring_event_queue.push event
           else

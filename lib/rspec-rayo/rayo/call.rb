@@ -1,11 +1,13 @@
+require 'future-resource'
+
 module RSpecRayo
   class Call
-    attr_accessor :call_event, :ring_event, :status, :call_id
+    attr_accessor :ring_event, :status, :call_id
     attr_reader :queue
 
     def initialize(options)
-      @call_event = options[:call_event]
-      @call_id    = @call_event.call_id if @call_event
+      @call_event = FutureResource.new
+      call_event  = options[:call_event] if options[:call_event]
       @protocol   = options[:protocol]
       @queue      = options[:queue]
       @timeout    = options[:timeout] || 5
@@ -96,6 +98,16 @@ module RSpecRayo
 
     def next_event(timeout = nil)
       Timeout::timeout(timeout || @timeout) { @queue.pop }
+    end
+
+    def call_event
+      @call_event.resource @timeout
+    end
+
+    def call_event=(other)
+      raise ArgumentError, 'Call event must be a Punchblock::Rayo::Event::Offer' unless other.is_a? Punchblock::Rayo::Event::Offer
+      @call_event.resource  = other
+      @call_id              = other.call_id
     end
 
     private
