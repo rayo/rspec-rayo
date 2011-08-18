@@ -66,6 +66,22 @@ RSpec::Matchers.define :have_executed_correctly do
   end
 end
 
+RSpec::Matchers.define :have_dialed_correctly do
+  match_for_should do |call|
+    basic_validation call, RSpecRayo::Call do
+      match_type call.call_event, Punchblock::Rayo::Event::Offer
+    end
+  end
+
+  failure_message_for_should do |actual|
+    "The command failed to execute: #{@error}"
+  end
+
+  description do
+    "execute correctly"
+  end
+end
+
 RSpec::Matchers.define :be_a_valid_complete_hangup_event do
   match_for_should do |event|
     basic_validation event, Punchblock::Rayo::Event::Complete, true do
