@@ -31,7 +31,7 @@ def basic_validation(object, klass, validate_component_id = false)
 
   yield if block_given?
 
-  true unless @error
+  object unless @error
 end
 
 %w{
@@ -54,6 +54,22 @@ RSpec::Matchers.define :have_executed_correctly do
         @error = "expected status to be #{:executing.inspect}, got #{command.state_name}"
         raise RSpec::Expectations::ExpectationNotMetError
       end
+    end
+  end
+
+  failure_message_for_should do |actual|
+    "The command failed to execute: #{@error}"
+  end
+
+  description do
+    "execute correctly"
+  end
+end
+
+RSpec::Matchers.define :have_dialed_correctly do
+  match_for_should do |call|
+    basic_validation call, RSpecRayo::Call do
+      match_type call.call_event, Punchblock::Rayo::Event::Offer
     end
   end
 
