@@ -11,7 +11,8 @@ module RSpecRayo
       @ring_event     = FutureResource.new
       @protocol       = options[:protocol]
       @queue          = options[:queue]
-      @timeout        = options[:timeout] || 5
+      @read_timeout   = options[:read_timeout] || 5
+      @write_timeout  = options[:write_timeout] || 5
       @status         = :offered
     end
 
@@ -98,11 +99,11 @@ module RSpecRayo
     end
 
     def next_event(timeout = nil)
-      Timeout::timeout(timeout || @timeout) { @queue.pop }
+      Timeout::timeout(timeout || @read_timeout) { @queue.pop }
     end
 
     def call_event
-      @call_event.resource @timeout
+      @call_event.resource @write_timeout
     end
 
     def call_event=(other)
@@ -112,7 +113,7 @@ module RSpecRayo
     end
 
     def ring_event
-      @ring_event.resource @timeout
+      @ring_event.resource @write_timeout
     end
 
     def ring_event=(other)
