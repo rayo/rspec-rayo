@@ -7,6 +7,7 @@ module RSpecRayo
       @calls            = {}
       @call_queue       = Queue.new
       @queue_timeout    = options[:queue_timeout] || 5
+      @write_timeout    = options[:write_timeout] || 5
       @threads          = []
 
       initialize_rayo options
@@ -24,7 +25,7 @@ module RSpecRayo
     end
 
     def dial(options)
-      Call.new(:protocol => @rayo, :queue => Queue.new, :timeout => @queue_timeout).tap do |call|
+      Call.new(:protocol => @rayo, :queue => Queue.new, :read_timeout => @queue_timeout, :write_timeout => @write_timeout).tap do |call|
         dial = call.dial options
         call.call_id = dial.call_id
         @calls.merge! call.call_id => call
@@ -39,10 +40,11 @@ module RSpecRayo
           event = @event_queue.pop
           case event
           when Punchblock::Rayo::Event::Offer
-            call = Call.new :call_event => event,
-                            :protocol   => @rayo,
-                            :queue      => Queue.new,
-                            :timeout    => @queue_timeout
+            call = Call.new :call_event     => event,
+                            :protocol       => @rayo,
+                            :queue          => Queue.new,
+                            :read_timeout   => @queue_timeout,
+                            :write_timeout  => @write_timeout
             @calls.merge! event.call_id => call
             @call_queue.push call
           when Punchblock::Rayo::Event::Ringing
