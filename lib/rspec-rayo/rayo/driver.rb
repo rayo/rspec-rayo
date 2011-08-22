@@ -39,7 +39,7 @@ module RSpecRayo
         until event == 'STOP' do
           event = @event_queue.pop
           case event
-          when Punchblock::Rayo::Event::Offer
+          when Punchblock::Event::Offer
             call = Call.new :call_event     => event,
                             :protocol       => @rayo,
                             :queue          => Queue.new,
@@ -47,13 +47,13 @@ module RSpecRayo
                             :write_timeout  => @write_timeout
             @calls.merge! event.call_id => call
             @call_queue.push call
-          when Punchblock::Rayo::Event::Ringing
+          when Punchblock::Event::Ringing
             call = @calls[event.call_id]
             call.ring_event = event if call
           else
             # Temp based on this nil returned on conference: https://github.com/tropo/punchblock/issues/27
             begin
-              if event.is_a?(Punchblock::Rayo::Event::End)
+              if event.is_a?(Punchblock::Event::End)
                 @calls[event.call_id].status = :finished
               end
               @calls[event.call_id].queue.push event unless event.nil?
@@ -74,12 +74,12 @@ module RSpecRayo
       initialize_logging options
 
       # Setup our Rayo environment
-      @rayo = Punchblock::Rayo.new :username         => options[:username],
-                                   :password         => options[:password],
-                                   :wire_logger      => @wire_logger,
-                                   :transport_logger => @transport_logger,
-                                   :auto_reconnect   => false,
-                                   :write_timeout    => options[:write_timeout]
+      @rayo = Punchblock::Connection.new :username         => options[:username],
+                                         :password         => options[:password],
+                                         :wire_logger      => @wire_logger,
+                                         :transport_logger => @transport_logger,
+                                         :auto_reconnect   => false,
+                                         :write_timeout    => options[:write_timeout]
       @event_queue = @rayo.event_queue
 
       start_rayo

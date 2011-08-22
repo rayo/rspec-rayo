@@ -17,77 +17,77 @@ module RSpecRayo
     end
 
     def accept
-      write(@protocol.class::Command::Accept.new).tap do |response|
+      write(Punchblock::Command::Accept.new).tap do |response|
         @status = :accepted if response
       end
     end
 
     def answer
-      write @protocol.class::Command::Answer.new
+      write Punchblock::Command::Answer.new
     end
 
     def ask(options = {})
-      write @protocol.class::Component::Tropo::Ask.new(options)
+      write Punchblock::Component::Tropo::Ask.new(options)
     end
 
     def conference(options = {})
-      write @protocol.class::Component::Tropo::Conference.new(options)
+      write Punchblock::Component::Tropo::Conference.new(options)
     end
 
     def dial(options = {})
-      write @protocol.class::Command::Dial.new(options)
+      write Punchblock::Command::Dial.new(options)
     end
 
     def hangup
-      write(@protocol.class::Command::Hangup.new).tap do |response|
+      write(Punchblock::Command::Hangup.new).tap do |response|
         @status = :finished if response
       end
     end
 
     def redirect(options = {})
-      write @protocol.class::Command::Redirect.new(options)
+      write Punchblock::Command::Redirect.new(options)
     end
 
     def reject(reason = nil)
-      write(@protocol.class::Command::Reject.new(reason)).tap do |response|
+      write(Punchblock::Command::Reject.new(reason)).tap do |response|
         @status = :finished if response
       end
     end
 
     def say(options = {})
-      write @protocol.class::Component::Tropo::Say.new(options)
+      write Punchblock::Component::Tropo::Say.new(options)
     end
 
     def transfer(options = {})
-      write @protocol.class::Component::Tropo::Transfer.new(options)
+      write Punchblock::Component::Tropo::Transfer.new(options)
     end
 
     def record(options = {})
-      write @protocol.class::Component::Record.new(options)
+      write Punchblock::Component::Record.new(options)
     end
 
     def output(options = {})
-      write @protocol.class::Component::Output.new(options)
+      write Punchblock::Component::Output.new(options)
     end
 
     def input(options = {})
-      write @protocol.class::Component::Input.new(options)
+      write Punchblock::Component::Input.new(options)
     end
 
     def join(options = {})
-      write @protocol.class::Command::Join.new(options)
+      write Punchblock::Command::Join.new(options)
     end
 
     def unjoin(options = {})
-      write @protocol.class::Command::Unjoin.new(options)
+      write Punchblock::Command::Unjoin.new(options)
     end
 
     def mute
-      write @protocol.class::Command::Mute.new
+      write Punchblock::Command::Mute.new
     end
 
     def unmute
-      write @protocol.class::Command::Unmute.new
+      write Punchblock::Command::Unmute.new
     end
 
     def last_event?(timeout = 2)
@@ -107,7 +107,7 @@ module RSpecRayo
     end
 
     def call_event=(other)
-      raise ArgumentError, 'Call event must be a Punchblock::Rayo::Event::Offer' unless other.is_a? Punchblock::Rayo::Event::Offer
+      raise ArgumentError, 'Call event must be a Punchblock::Event::Offer' unless other.is_a? Punchblock::Event::Offer
       @call_event.resource  = other
       @call_id              = other.call_id
     end
@@ -117,7 +117,7 @@ module RSpecRayo
     end
 
     def ring_event=(other)
-      raise ArgumentError, 'Ring event must be a Punchblock::Rayo::Event::Ringing' unless other.is_a? Punchblock::Rayo::Event::Ringing
+      raise ArgumentError, 'Ring event must be a Punchblock::Event::Ringing' unless other.is_a? Punchblock::Event::Ringing
       @ring_event.resource = other
     end
 

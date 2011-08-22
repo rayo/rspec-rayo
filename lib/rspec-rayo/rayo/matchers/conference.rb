@@ -1,6 +1,6 @@
 RSpec::Matchers.define :be_a_valid_conference_command do
   match_for_should do |event|
-    basic_validation event, Punchblock::Rayo::Component::Tropo::Conference::OffHold, true
+    basic_validation event, Punchblock::Component::Tropo::Conference::OffHold, true
   end
 
   failure_message_for_should do |actual|

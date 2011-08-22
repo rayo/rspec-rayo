@@ -49,7 +49,7 @@ end
 
 RSpec::Matchers.define :have_executed_correctly do
   match_for_should do |command|
-    basic_validation command, Punchblock::Rayo::CommandNode do
+    basic_validation command, Punchblock::CommandNode do
       unless command.executing?
         @error = "expected status to be #{:executing.inspect}, got #{command.state_name}"
         raise RSpec::Expectations::ExpectationNotMetError
@@ -68,7 +68,7 @@ end
 
 RSpec::Matchers.define :have_dialed_correctly do
   match_for_should do |call|
-    basic_validation call, RSpecRayo::Call do
+    basic_validation call, RSpecCall do
       call.ring_event.should be_a_valid_ringing_event
     end
   end
@@ -84,8 +84,8 @@ end
 
 RSpec::Matchers.define :be_a_valid_complete_hangup_event do
   match_for_should do |event|
-    basic_validation event, Punchblock::Rayo::Event::Complete, true do
-      match_type event.reason, Punchblock::Rayo::Event::Complete::Hangup
+    basic_validation event, Punchblock::Event::Complete, true do
+      match_type event.reason, Punchblock::Event::Complete::Hangup
     end
   end
 
@@ -104,8 +104,8 @@ RSpec::Matchers.define :be_a_valid_complete_error_event do
   end
 
   match_for_should do |event|
-    basic_validation event, Punchblock::Rayo::Event::Complete, true do
-      match_type event.reason, Punchblock::Rayo::Event::Complete::Error
+    basic_validation event, Punchblock::Event::Complete, true do
+      match_type event.reason, Punchblock::Event::Complete::Error
       @error = "The error message was not correct. Expected '#{@message}', got '#{event.reason.details}'" if @message && event.reason.details != @message
     end
   end

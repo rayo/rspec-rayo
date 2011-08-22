@@ -18,7 +18,7 @@ describe "Rayo call control matchers" do
     end
 
     subject do
-      Punchblock::Rayo::Event::Offer.new.tap do |offer|
+      Punchblock::Event::Offer.new.tap do |offer|
         offer.call_id = "8df3437f-285f-406e-9ba2-9d14af1b72c4"
         offer.to = "sip:usera@10.0.1.11"
         offer.headers = headers
@@ -30,7 +30,7 @@ describe "Rayo call control matchers" do
 
   describe "an answered event" do
     subject do
-      Punchblock::Rayo::Event::Answered.new.tap do |event|
+      Punchblock::Event::Answered.new.tap do |event|
         event.call_id = "3b7720bf-d5dc-4f4f-a837-d7338ec18b3a@10.0.1.11"
       end
     end
@@ -40,9 +40,9 @@ describe "Rayo call control matchers" do
 
   describe "a hangup event" do
     subject do
-      Punchblock::Rayo::Event::End.new.tap do |end_event|
+      Punchblock::Event::End.new.tap do |end_event|
         end_event.call_id = "3b7720bf-d5dc-4f4f-a837-d7338ec18b3a@10.0.1.11"
-        end_event << Punchblock::Rayo::RayoNode.new('hangup')
+        end_event << Punchblock::RayoNode.new('hangup')
       end
     end
 
@@ -51,7 +51,7 @@ describe "Rayo call control matchers" do
 
   describe "a ringing event" do
     subject do
-      Punchblock::Rayo::Event::Ringing.new.tap do |event|
+      Punchblock::Event::Ringing.new.tap do |event|
         event.call_id = "3b7720bf-d5dc-4f4f-a837-d7338ec18b3a@10.0.1.11"
       end
     end
@@ -61,9 +61,9 @@ describe "Rayo call control matchers" do
 
   describe "a redirect event" do
     subject do
-      Punchblock::Rayo::Event::End.new.tap do |end_event|
+      Punchblock::Event::End.new.tap do |end_event|
         end_event.call_id = "3b7720bf-d5dc-4f4f-a837-d7338ec18b3a@10.0.1.11"
-        end_event << Punchblock::Rayo::RayoNode.new('redirect')
+        end_event << Punchblock::RayoNode.new('redirect')
       end
     end
 
@@ -72,9 +72,9 @@ describe "Rayo call control matchers" do
 
   describe "a reject event" do
     subject do
-      Punchblock::Rayo::Event::End.new.tap do |end_event|
+      Punchblock::Event::End.new.tap do |end_event|
         end_event.call_id = "3b7720bf-d5dc-4f4f-a837-d7338ec18b3a@10.0.1.11"
-        end_event << Punchblock::Rayo::RayoNode.new('reject')
+        end_event << Punchblock::RayoNode.new('reject')
       end
     end
 
