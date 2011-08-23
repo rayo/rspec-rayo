@@ -68,7 +68,7 @@ end
 
 RSpec::Matchers.define :have_dialed_correctly do
   match_for_should do |call|
-    basic_validation call, RSpecCall do
+    basic_validation call, RSpecRayo::Call do
       call.ring_event.should be_a_valid_ringing_event
     end
   end
