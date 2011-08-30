@@ -90,6 +90,10 @@ module RSpecRayo
       write Punchblock::Command::Unmute.new
     end
 
+    def dtmf(tones)
+      write Punchblock::Command::DTMF.new(:tones => tones)
+    end
+
     def last_event?(timeout = 2)
       begin
         next_event timeout
