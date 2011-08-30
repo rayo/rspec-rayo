@@ -1,15 +1,42 @@
 require 'spec_helper'
 
 describe "Rayo Conference matchers" do
-  it "should validate a conference event" do
-    pending
-    conference_event = mock(Punchblock::Event)
-    conference_event.stub!(:is_a?).with(Punchblock::Event).and_return true
-    conference_event.stub!(:call_id).and_return('5d6fe904-103d-4551-bd47-cf212c37b8c7')
-    conference_event.stub!(:component_id).and_return('6d5bf745-8fa9-4e78-be18-6e6a48393f13')
-    conference_event.stub!(:namespace_href).and_return('urn:xmpp:ozone:ext:1')
-    conference_event.stub_chain(:reason, :name).and_return(:hangup)
+  describe "a conference event" do
+    subject do
+      Punchblock::Component::Tropo::Conference::OffHold.new.tap do |event|
+        event.call_id = '5d6fe904-103d-4551-bd47-cf212c37b8c7'
+        event.component_id = '6d5bf745-8fa9-4e78-be18-6e6a48393f13'
+      end
+    end
 
-    conference_event.should be_a_valid_conference_event
+    it { should be_a_valid_conference_offhold_event }
+  end
+
+  describe "a speaking event" do
+    subject do
+      Punchblock::Component::Tropo::Conference::Speaking.new.tap do |event|
+        event.call_id = '5d6fe904-103d-4551-bd47-cf212c37b8c7'
+        event.component_id = '6d5bf745-8fa9-4e78-be18-6e6a48393f13'
+        event.write_attr :'call-id', 'abc123'
+      end
+    end
+
+    it { should be_a_valid_speaking_event }
+    it { should be_a_valid_speaking_event.for_call_id('abc123') }
+    it { should_not be_a_valid_speaking_event.for_call_id('123abc') }
+  end
+
+  describe "a finished-speaking event" do
+    subject do
+      Punchblock::Component::Tropo::Conference::FinishedSpeaking.new.tap do |event|
+        event.call_id = '5d6fe904-103d-4551-bd47-cf212c37b8c7'
+        event.component_id = '6d5bf745-8fa9-4e78-be18-6e6a48393f13'
+        event.write_attr :'call-id', 'abc123'
+      end
+    end
+
+    it { should be_a_valid_finished_speaking_event }
+    it { should be_a_valid_finished_speaking_event.for_call_id('abc123') }
+    it { should_not be_a_valid_finished_speaking_event.for_call_id('123abc') }
   end
 end
