@@ -55,3 +55,19 @@ RSpec::Matchers.define :be_a_valid_finished_speaking_event do
     end
   end
 end
+
+RSpec::Matchers.define :be_a_valid_conference_complete_terminator_event do
+  match_for_should do |event|
+    basic_validation event, Punchblock::Event::Complete, true do
+      match_type event.reason, Punchblock::Component::Tropo::Conference::Complete::Terminator
+    end
+  end
+
+  failure_message_for_should do |actual|
+    "The conference complete terminator event was not valid: #{@error}"
+  end
+
+  description do
+    "be a valid conference complete terminator event"
+  end
+end
