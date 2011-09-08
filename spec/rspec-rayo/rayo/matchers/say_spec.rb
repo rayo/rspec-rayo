@@ -17,7 +17,7 @@ describe "Rayo Say matchers" do
 
     describe "that stopped" do
       let(:reason) { Punchblock::Event::Complete::Stop.new }
-      it { should be_a_valid_stopped_say_event }
+      it { should be_a_valid_complete_stopped_event }
     end
   end
 end

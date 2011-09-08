@@ -27,22 +27,6 @@ RSpec::Matchers.define :be_a_valid_successful_input_event do
   end
 end
 
-RSpec::Matchers.define :be_a_valid_stopped_input_event do
-  match_for_should do |event|
-    basic_validation event, Punchblock::Event::Complete, true do
-      match_type event.reason, Punchblock::Event::Complete::Stop
-    end
-  end
-
-  failure_message_for_should do |actual|
-    "The input event was not valid: #{@error}"
-  end
-
-  description do
-    "be a valid stopped input event"
-  end
-end
-
 RSpec::Matchers.define :be_a_valid_input_noinput_event do
   match_for_should do |event|
     basic_validation event, Punchblock::Event::Complete, true do
