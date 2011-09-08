@@ -27,7 +27,7 @@ describe "Rayo Input matchers" do
 
     describe "that stopped" do
       let(:reason) { Punchblock::Event::Complete::Stop.new }
-      it { should be_a_valid_stopped_input_event }
+      it { should be_a_valid_complete_stopped_event }
     end
 
     describe "that got no input" do
