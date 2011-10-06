@@ -74,12 +74,14 @@ module RSpecRayo
       initialize_logging options
 
       # Setup our Rayo environment
-      @rayo = Punchblock::Connection.new :username         => options[:username],
-                                         :password         => options[:password],
-                                         :wire_logger      => @wire_logger,
-                                         :transport_logger => @transport_logger,
-                                         :auto_reconnect   => false,
-                                         :write_timeout    => options[:write_timeout]
+      @rayo = Punchblock::Connection.new  :username         => options[:username],
+                                          :password         => options[:password],
+                                          :host             => options[:host],
+                                          :port             => options[:port],
+                                          :wire_logger      => @wire_logger,
+                                          :transport_logger => @transport_logger,
+                                          :auto_reconnect   => false,
+                                          :write_timeout    => options[:write_timeout]
       @event_queue = @rayo.event_queue
 
       start_rayo
