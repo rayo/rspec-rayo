@@ -1,6 +1,6 @@
 module RSpecRayo
   class RayoDriver
-    attr_reader :event_queue, :threads
+    attr_reader :call_queue, :event_queue, :threads
     attr_accessor :calls
 
     def initialize(options)
