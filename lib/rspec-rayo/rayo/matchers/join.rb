@@ -8,7 +8,7 @@ RSpec::Matchers.define :be_a_valid_joined_event do
   end
 
   match_for_should do |event|
-    basic_validation event, Punchblock::Event::Joined do
+    match_type event, Punchblock::Event::Joined do
       @error = "The other call ID was not correct. Expected '#{@other_call_id}', got '#{event.other_call_id}'" if @other_call_id && event.other_call_id != @other_call_id
       @error = "The mixer ID was not correct. Expected '#{@mixer_id}', got '#{event.mixer_id}'" if @mixer_id && event.mixer_id != @mixer_id
     end
@@ -36,7 +36,7 @@ RSpec::Matchers.define :be_a_valid_unjoined_event do
   end
 
   match_for_should do |event|
-    basic_validation event, Punchblock::Event::Unjoined do
+    match_type event, Punchblock::Event::Unjoined do
       @error = "The other call ID was not correct. Expected '#{@other_call_id}', got '#{event.other_call_id}'" if @other_call_id && event.other_call_id != @other_call_id
       @error = "The mixer ID was not correct. Expected '#{@mixer_id}', got '#{event.mixer_id}'" if @mixer_id && event.mixer_id != @mixer_id
     end

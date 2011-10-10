@@ -4,7 +4,7 @@ RSpec::Matchers.define :be_a_valid_dtmf_event do
   end
 
   match_for_should do |event|
-    basic_validation event, Punchblock::Event::DTMF do
+    match_type event, Punchblock::Event::DTMF do
       @error = "The signal was not correct. Expected '#{@signal}', got '#{event.signal}'" if @signal && event.signal != @signal
     end
   end
