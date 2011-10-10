@@ -1,6 +1,6 @@
 RSpec::Matchers.define :be_a_valid_say_event do
   match_for_should do |event|
-    basic_validation event, Punchblock::Event::Complete, true do
+    match_type event, Punchblock::Event::Complete do
       match_type event.reason, Punchblock::Component::Tropo::Say::Complete::Success
     end
   end
