@@ -9,7 +9,7 @@ module RSpecRayo
       @call_event     = FutureResource.new
       self.call_event = options[:call_event] if options[:call_event]
       @ring_event     = FutureResource.new
-      @protocol       = options[:protocol]
+      @client         = options[:client]
       @queue          = options[:queue]
       @read_timeout   = options[:read_timeout] || 5
       @write_timeout  = options[:write_timeout] || 5
@@ -128,7 +128,8 @@ module RSpecRayo
     private
 
     def write(msg)
-      response = @protocol.write @call_id, msg
+      response = @client.execute_command msg, :call_id => @call_id, :async => false
+      raise response if response.is_a?(Exception)
       msg if response
     end
   end
