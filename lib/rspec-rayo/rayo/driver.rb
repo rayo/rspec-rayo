@@ -25,7 +25,7 @@ module RSpecRayo
     end
 
     def dial(options)
-      Call.new(:protocol => @rayo, :queue => Queue.new, :read_timeout => @queue_timeout, :write_timeout => @write_timeout).tap do |call|
+      Call.new(:client => @rayo, :queue => Queue.new, :read_timeout => @queue_timeout, :write_timeout => @write_timeout).tap do |call|
         dial = call.dial options
         call.call_id = dial.call_id
         @calls.merge! call.call_id => call
@@ -41,7 +41,7 @@ module RSpecRayo
           case event
           when Punchblock::Event::Offer
             call = Call.new :call_event     => event,
-                            :protocol       => @rayo,
+                            :client         => @rayo,
                             :queue          => Queue.new,
                             :read_timeout   => @queue_timeout,
                             :write_timeout  => @write_timeout
@@ -74,14 +74,15 @@ module RSpecRayo
       initialize_logging options
 
       # Setup our Rayo environment
-      @rayo = Punchblock::Connection.new  :username         => options[:username],
-                                          :password         => options[:password],
-                                          :host             => options[:host],
-                                          :port             => options[:port],
-                                          :wire_logger      => @wire_logger,
-                                          :transport_logger => @transport_logger,
-                                          :auto_reconnect   => false,
-                                          :write_timeout    => options[:write_timeout]
+      connection = Punchblock::Connection::XMPP.new :username         => options[:username],
+                                                    :password         => options[:password],
+                                                    :host             => options[:host],
+                                                    :port             => options[:port],
+                                                    :wire_logger      => @wire_logger,
+                                                    :transport_logger => @transport_logger,
+                                                    :auto_reconnect   => false
+      @rayo = Punchblock::Client.new  :connection => connection,
+                                      :write_timeout => options[:write_timeout]
       @event_queue = @rayo.event_queue
 
       start_rayo
