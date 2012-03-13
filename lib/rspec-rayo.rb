@@ -1,7 +1,7 @@
 %w{
-  rspec-rayo/tropo1/driver
+  punchblock
 
-  rspec-rayo/rayo/driver
-  rspec-rayo/rayo/call
-  rspec-rayo/rayo/matchers
+  rspec-rayo/driver
+  rspec-rayo/call
+  rspec-rayo/matchers
 }.each { |lib| require lib }

@@ -22,7 +22,7 @@ end
   recording
   say
   transfer
-}.each { |matcher| require "rspec-rayo/rayo/matchers/#{matcher}" }
+}.each { |matcher| require "rspec-rayo/matchers/#{matcher}" }
 
 RSpec::Matchers.define :have_executed_correctly do
   match_for_should do |command|
