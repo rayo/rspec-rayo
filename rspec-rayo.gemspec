@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
 
-  s.add_dependency %q<rspec>, [">= 2.6.0"]
+  s.add_dependency %q<rspec>, [">= 2.9.0.rc1"]
   s.add_dependency %q<punchblock>, [">= 0.9.2"]
   s.add_dependency %q<countdownlatch>, [">= 1.0.0"]
   s.add_dependency %q<future-resource>, [">= 1.0.0"]
