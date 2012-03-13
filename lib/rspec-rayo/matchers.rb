@@ -12,16 +12,12 @@ def match_type(object, type)
 end
 
 %w{
-  ask
   call_control
-  conference
   dtmf
   input
   join
   output
   recording
-  say
-  transfer
 }.each { |matcher| require "rspec-rayo/matchers/#{matcher}" }
 
 RSpec::Matchers.define :have_executed_correctly do

@@ -26,14 +26,6 @@ module RSpecRayo
       write Punchblock::Command::Answer.new
     end
 
-    def ask(options = {})
-      write Punchblock::Component::Tropo::Ask.new(options)
-    end
-
-    def conference(options = {})
-      write Punchblock::Component::Tropo::Conference.new(options)
-    end
-
     def dial(options = {})
       write Punchblock::Command::Dial.new(options)
     end
@@ -52,14 +44,6 @@ module RSpecRayo
       write(Punchblock::Command::Reject.new(reason)).tap do |response|
         @status = :finished if response
       end
-    end
-
-    def say(options = {})
-      write Punchblock::Component::Tropo::Say.new(options)
-    end
-
-    def transfer(options = {})
-      write Punchblock::Component::Tropo::Transfer.new(options)
     end
 
     def record(options = {})
