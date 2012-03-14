@@ -6,13 +6,14 @@ module RSpecRayo
     attr_reader :queue
 
     def initialize(options)
-      @call_event     = FutureResource.new
-      self.call_event = options[:call_event] if options[:call_event]
+      @offer_event    = FutureResource.new
       @ring_event     = FutureResource.new
+      @queue          = Queue.new
+
       @client         = options[:client]
-      @queue          = options[:queue]
       @read_timeout   = options[:read_timeout] || 5
       @write_timeout  = options[:write_timeout] || 5
+
       @status         = :offered
     end
 
@@ -90,30 +91,45 @@ module RSpecRayo
       Timeout::timeout(timeout || @read_timeout) { @queue.pop }
     end
 
-    def call_event
-      @call_event.resource @write_timeout
+    def offer_event
+      @offer_event.resource @read_timeout
     end
 
-    def call_event=(other)
-      raise ArgumentError, 'Call event must be a Punchblock::Event::Offer' unless other.is_a? Punchblock::Event::Offer
-      @call_event.resource  = other
-      @call_id              = other.call_id
+    def offer_event=(other)
+      pb_logger.debug "Setting offer_event to #{other.inspect}"
+      @offer_event.resource  = other
+      @offer_id              = other.call_id
     end
 
-    def ring_event
-      @ring_event.resource @write_timeout
+    def ring_event(timeout = @read_timeout)
+      @ring_event.resource timeout
     end
 
     def ring_event=(other)
-      raise ArgumentError, 'Ring event must be a Punchblock::Event::Ringing' unless other.is_a? Punchblock::Event::Ringing
+      pb_logger.debug "Setting ring_event to #{other.inspect}"
       @ring_event.resource = other
+    end
+
+    def <<(event)
+      pb_logger.debug "Processing event #{event.inspect}"
+      case event
+      when Punchblock::Event::Offer
+        pb_logger.debug "Received an offer event"
+        self.offer_event = event
+      when Punchblock::Event::Ringing
+        pb_logger.debug "Received a ringing event"
+        self.ring_event = event
+      when Punchblock::Event::End
+        pb_logger.debug "Received an end event"
+        @status = :finished
+      end
+      @queue << event if event
     end
 
     private
 
     def write(msg)
       response = @client.execute_command msg, :call_id => @call_id, :async => false
-      raise response if response.is_a?(Exception)
       msg if response
     end
   end

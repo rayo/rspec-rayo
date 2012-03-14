@@ -1,20 +1,26 @@
+require 'countdownlatch'
+
 module RSpecRayo
   class RayoDriver
-    attr_reader :call_queue, :event_queue, :threads
-    attr_accessor :calls
+    attr_reader :call_queue, :calls
 
     def initialize(options)
       @calls            = {}
       @call_queue       = Queue.new
-      @queue_timeout    = options[:queue_timeout] || 5
-      @write_timeout    = options[:write_timeout] || 5
+      @queue_timeout    = options.delete(:queue_timeout) || 5
+      @write_timeout    = options.delete(:write_timeout) || 5
       @threads          = []
+      @connection_latch = CountDownLatch.new 1
 
-      initialize_rayo options
+      initialize_punchblock options
+    end
+
+    def wait_for_connection(timeout = nil)
+      @connection_latch.wait timeout
     end
 
     def get_call
-      read_queue @call_queue
+      Timeout::timeout(@queue_timeout) { @call_queue.pop }
     end
 
     def cleanup_calls
@@ -25,89 +31,52 @@ module RSpecRayo
     end
 
     def dial(options)
-      Call.new(:client => @rayo, :queue => Queue.new, :read_timeout => @queue_timeout, :write_timeout => @write_timeout).tap do |call|
+      new_call.tap do |call|
         dial = call.dial options
         call.call_id = dial.call_id
-        @calls.merge! call.call_id => call
+        @calls[call.call_id] = call
       end
     end
 
-    def start_event_dispatcher
-      @threads << Thread.new do
-        event = nil
+    private
 
-        until event == 'STOP' do
-          event = @event_queue.pop
-          case event
-          when Punchblock::Event::Offer
-            call = Call.new :call_event     => event,
-                            :client         => @rayo,
-                            :queue          => Queue.new,
-                            :read_timeout   => @queue_timeout,
-                            :write_timeout  => @write_timeout
-            @calls.merge! event.call_id => call
-            @call_queue.push call
-          when Punchblock::Event::Ringing
-            call = @calls[event.call_id]
-            call.ring_event = event if call
-          else
-            # Temp based on this nil returned on conference: https://github.com/tropo/punchblock/issues/27
-            begin
-              if event.is_a?(Punchblock::Event::End)
-                @calls[event.call_id].status = :finished
-              end
-              @calls[event.call_id].queue.push event unless event.nil?
-            rescue => error
-              # Event nil issue to be addressed here: https://github.com/tropo/rspec-rayo/issues/2
-            end
-          end
+    def new_call
+      Call.new :client        => @pb_client,
+               :read_timeout  => @queue_timeout,
+               :write_timeout => @write_timeout
+    end
+
+    def initialize_punchblock(options)
+      logger = Logger.new 'punchblock.log'
+
+      def logger.trace(*args)
+        debug *args
+      end
+
+      Punchblock.logger = logger
+
+      connection = Punchblock::Connection::XMPP.new options
+
+      @pb_client = Punchblock::Client.new  :connection => connection,
+                                           :write_timeout => options[:write_timeout]
+
+      @pb_client.register_event_handler do |event|
+        if event.is_a?(Punchblock::Connection::Connected)
+          logger.info "Connected!"
+          @connection_latch.countdown!
+          throw :pass
         end
 
-      end
-    end
-
-    def read_queue(queue)
-      Timeout::timeout(@queue_timeout) { queue.pop }
-    end
-
-    def initialize_rayo(options)
-      initialize_logging options
-
-      # Setup our Rayo environment
-      connection = Punchblock::Connection::XMPP.new :username         => options[:username],
-                                                    :password         => options[:password],
-                                                    :host             => options[:host],
-                                                    :port             => options[:port],
-                                                    :wire_logger      => @wire_logger,
-                                                    :transport_logger => @transport_logger,
-                                                    :auto_reconnect   => false
-      @rayo = Punchblock::Client.new  :connection => connection,
-                                      :write_timeout => options[:write_timeout]
-      @event_queue = @rayo.event_queue
-
-      start_rayo
-    end
-
-    def initialize_logging(options)
-      @wire_logger = options[:wire_logger]
-      @wire_logger.level = options[:log_level]
-      #@wire_logger.info "Starting up..." if @wire_logger
-
-      @transport_logger = options[:transport_logger]
-      @transport_logger.level = options[:log_level]
-      #@transport_logger.info "Starting up..." if @transport_logger
-    end
-
-    def start_rayo
-      # Launch the Rayo thread
-      @threads << Thread.new do
-        begin
-          @rayo.run
-        rescue => e
-          puts "Exception in XMPP thread! #{e.message}"
-          puts e.backtrace.join("\t\n")
+        if call = @calls[event.call_id]
+          @calls[event.call_id] << event
+        else
+          call = new_call
+          @calls[event.call_id] = call
+          @call_queue.push call
         end
       end
+
+      Thread.new { @pb_client.run }
     end
   end
 end
