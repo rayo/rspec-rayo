@@ -12,20 +12,17 @@ def match_type(object, type)
 end
 
 %w{
-  ask
   call_control
-  conference
   dtmf
   input
   join
   output
   recording
-  say
-  transfer
-}.each { |matcher| require "rspec-rayo/rayo/matchers/#{matcher}" }
+}.each { |matcher| require "rspec-rayo/matchers/#{matcher}" }
 
 RSpec::Matchers.define :have_executed_correctly do
   match_for_should do |command|
+    command.await_completion
     match_type command, Punchblock::CommandNode do
       unless command.executing?
         @error = "expected status to be #{:executing.inspect}, got #{command.state_name}"
@@ -45,9 +42,7 @@ end
 
 RSpec::Matchers.define :have_dialed_correctly do
   match_for_should do |call|
-    match_type call, RSpecRayo::Call do
-      call.ring_event.should be_a_valid_ringing_event
-    end
+    match_type call, RSpecRayo::Call
   end
 
   failure_message_for_should do |actual|
