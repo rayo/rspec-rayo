@@ -10,8 +10,8 @@ describe "Rayo call control matchers" do
     end
 
     it { should be_a_valid_joined_event }
-    it { should be_a_valid_joined_event.with_other_call_id('foo') }
-    it { should_not be_a_valid_joined_event.with_other_call_id('bar') }
+    it { should be_a_valid_joined_event.with_call_id('foo') }
+    it { should_not be_a_valid_joined_event.with_call_id('bar') }
     it { should be_a_valid_joined_event.with_mixer_name('foo1') }
     it { should_not be_a_valid_joined_event.with_mixer_name('bar1') }
   end
@@ -25,8 +25,8 @@ describe "Rayo call control matchers" do
     end
 
     it { should be_a_valid_unjoined_event }
-    it { should be_a_valid_unjoined_event.with_other_call_id('foo') }
-    it { should_not be_a_valid_unjoined_event.with_other_call_id('bar') }
+    it { should be_a_valid_unjoined_event.with_call_id('foo') }
+    it { should_not be_a_valid_unjoined_event.with_call_id('bar') }
     it { should be_a_valid_unjoined_event.with_mixer_name('foo1') }
     it { should_not be_a_valid_unjoined_event.with_mixer_name('bar1') }
   end
